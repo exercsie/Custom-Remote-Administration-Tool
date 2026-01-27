@@ -29,4 +29,17 @@ int main() {
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_port = htons(PORT);
     inet_pton(AF_INET, "10.2.0.2", &serverAddress.sin_addr);
+
+    if(connect(sock, (sockaddr*) &serverAddress, sizeof(serverAddress)) == SOCKET_ERROR) {
+        perror("Connection failed\n");
+        closesocket(sock);
+        WSACleanup();
+        return 1;
+    } else {
+        std::cout << "Connection established\n";
+    }
+
+    while(true) {
+        
+    }
 }
