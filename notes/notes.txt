@@ -1,2 +1,3 @@
 Create a menu to select which mode you want (send messages, files)
 Allow the remote server to send files
+Implement encryption
