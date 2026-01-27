@@ -8,6 +8,7 @@
 int main() {
     sockaddr_in serverAddress;
     WSADATA wsa;
+    char buffer[BUFFERSIZE];
     SOCKET sock = INVALID_SOCKET;
 
     if(WSAStartup(MAKEWORD(2, 2), &wsa) != 0) { //ver 2.2
@@ -40,6 +41,11 @@ int main() {
     }
 
     while(true) {
-        
+        memset(buffer, 0, BUFFERSIZE);
+        int bytesRec = recv(sock, buffer, BUFFERSIZE, 0);
+        if(bytesRec <= 0) {
+            std::cout << "Connection closed by server\n";
+            break;
+        }
     }
 }
