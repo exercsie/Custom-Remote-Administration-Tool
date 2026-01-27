@@ -6,6 +6,7 @@
 #define BUFFERSIZE 4096
 
 int main() {
+    sockaddr_in serverAddress;
     WSADATA wsa;
     SOCKET sock = INVALID_SOCKET;
 
@@ -24,4 +25,8 @@ int main() {
     } else {
         std::cout << "Socket created\n";
     }
+
+    serverAddress.sin_family = AF_INET;
+    serverAddress.sin_port = htons(PORT);
+    inet_pton(AF_INET, "10.2.0.2", &serverAddress.sin_addr);
 }
