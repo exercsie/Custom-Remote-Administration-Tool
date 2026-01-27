@@ -26,10 +26,17 @@ int main() {
     serverAddress.sin_addr.s_addr = INADDR_ANY; // ip address to bind to
     serverAddress.sin_port = htons(PORT); // htons converts port to network byte order
     if(bind(serverFileDescripter, (sockaddr*) &serverAddress, sizeof(serverAddress)) < 0) {
-        perror("bind failed");
+        perror("Bind failed\n");
         return 1;
     } else {
-        std::cout << "Bind successful";
+        std::cout << "Bind successful\n";
+    }
+
+    if(listen(serverFileDescripter, 1) < 0) {
+        perror("Failed to find incoming connection requests\n");
+        return 1;
+    } else {
+        std::cout << "Listening on port " << PORT << std::endl; 
     }
 
     return 0;
