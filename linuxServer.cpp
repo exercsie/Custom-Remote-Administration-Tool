@@ -10,8 +10,10 @@
 #define PORT 4444
 
 int main() {
-    sockaddr_in serverAddress{};
+    sockaddr_in serverAddress{}, clientAddress{};
+    socklen_t clientLength = sizeof(clientAddress);
     int serverFileDescripter; // 0 = standard input, 1= standard output, 2= standard error, 3 = socket created
+    int clientFileDescriptor;
     char buffer[BUFFERSIZE];
 
     serverFileDescripter = socket(AF_INET, SOCK_STREAM, 0);
@@ -37,6 +39,13 @@ int main() {
         return 1;
     } else {
         std::cout << "Listening on port " << PORT << std::endl; 
+    }
+
+    clientFileDescriptor = accept(serverFileDescripter, (sockaddr*) &clientAddress, &clientLength);
+    if(clientFileDescriptor < 0) {
+        perror("Client connection failed");
+    } else {
+        std::cout << "Client connected\n";
     }
 
     return 0;
