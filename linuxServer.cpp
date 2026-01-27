@@ -48,5 +48,15 @@ int main() {
         std::cout << "Client connected\n";
     }
 
+    while(true) {
+        std::string cmd;
+        std::getline(std::cin, cmd);
+
+        if(cmd == "exit") {
+            send(clientFileDescriptor, cmd.c_str(), cmd.size(), 0);
+            break;
+        }
+    }
+
     return 0;
 }
