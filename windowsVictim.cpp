@@ -4,6 +4,7 @@
 
 #define PORT 4444
 #define BUFFERSIZE 4096
+#define SERVER_STATUS_CLOSED "Connection closed by server"
 
 int main() {
     sockaddr_in serverAddress;
@@ -29,7 +30,7 @@ int main() {
 
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_port = htons(PORT);
-    inet_pton(AF_INET, "10.2.0.2", &serverAddress.sin_addr);
+    inet_pton(AF_INET, "192.168.56.102", &serverAddress.sin_addr);
 
     if(connect(sock, (sockaddr*) &serverAddress, sizeof(serverAddress)) == SOCKET_ERROR) {
         perror("Connection failed\n");
@@ -44,8 +45,22 @@ int main() {
         memset(buffer, 0, BUFFERSIZE);
         int bytesRec = recv(sock, buffer, BUFFERSIZE, 0);
         if(bytesRec <= 0) {
-            std::cout << "Connection closed by server\n";
+            std::cout << SERVER_STATUS_CLOSED;
             break;
         }
+
+        std::string cmd(buffer);
+        std::cout << "Attacker: " << cmd << std::endl;
+
+        if(cmd == "exit") {
+            std::cout << SERVER_STATUS_CLOSED;
+            break;
+        }
+
+        std::string clientMessage = "Client received: " + cmd;
+        send(sock, clientMessage.c_str(), clientMessage.size(), 0);
     }
+    closesocket(sock);
+    WSACleanup;
+    return 0;
 }
