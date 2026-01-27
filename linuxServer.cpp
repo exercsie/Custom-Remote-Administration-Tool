@@ -18,7 +18,7 @@ int main() {
 
     serverFileDescripter = socket(AF_INET, SOCK_STREAM, 0);
     if(serverFileDescripter < 0) {
-        perror("socket not created");
+        perror("Socket not created\n");
         return 1;
     } else if(serverFileDescripter == 3) {
         std::cout << "Socket created successfully\n";
@@ -43,7 +43,7 @@ int main() {
 
     clientFileDescriptor = accept(serverFileDescripter, (sockaddr*) &clientAddress, &clientLength);
     if(clientFileDescriptor < 0) {
-        perror("Client connection failed");
+        perror("Client connection failed\n");
     } else {
         std::cout << "Client connected\n";
     }
@@ -56,6 +56,13 @@ int main() {
             send(clientFileDescriptor, cmd.c_str(), cmd.size(), 0);
             break;
         }
+
+        send(clientFileDescriptor, cmd.c_str(), cmd.size(), 0);
+
+        memset(buffer, 0, BUFFERSIZE);
+        recv(clientFileDescriptor, buffer, BUFFERSIZE, 0);
+
+        std::cout << buffer << std::endl;
     }
 
     return 0;
