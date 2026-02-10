@@ -57,7 +57,7 @@ int main() {
             break;
         }
 
-        std::string clientMessage = "Client received: " + cmd;
+        std::string clientMessage = "\nClient received: " + cmd;
         send(sock, clientMessage.c_str(), clientMessage.size(), 0);
     }
     closesocket(sock);

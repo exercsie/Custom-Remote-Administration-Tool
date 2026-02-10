@@ -1,5 +1,6 @@
 #include <iostream>
 #include "menu.h"
+#include <limits>
 
 int menu() {
     int choice;
@@ -9,6 +10,7 @@ int menu() {
     std::cout << "3 - Exit\n";
 
     std::cin >> choice;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     return choice;
 }
