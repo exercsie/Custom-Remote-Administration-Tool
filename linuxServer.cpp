@@ -56,17 +56,26 @@ int main() {
             int type = TEXT;
             send(clientFileDescriptor, &type, sizeof(type), 0);
 
-            std::string cmd;
-            std::cout << "Type here: ";
-            std::getline(std::cin, cmd);
+            std::cout << "Type /back to return to the menu.\n";
 
-            send(clientFileDescriptor, cmd.c_str(), cmd.size(), 0);
+            while(true) {
+                std::string cmd;
+                std::cout << "Type here: ";
+                std::getline(std::cin, cmd);
 
-            memset(buffer, 0, BUFFERSIZE);
-            recv(clientFileDescriptor, buffer, BUFFERSIZE, 0);
+                if(cmd == "/back") {
+                    int back = BACK;
+                    send(clientFileDescriptor, &back, sizeof(back), 0);
+                    break;
+                }
 
-            std::cout << buffer << std::endl;
+                send(clientFileDescriptor, cmd.c_str(), cmd.size(), 0);
 
+                memset(buffer, 0, BUFFERSIZE);
+                recv(clientFileDescriptor, buffer, BUFFERSIZE, 0);
+
+                std::cout << buffer << std::endl;
+            }
         }
 
         if(choice == 3) {
