@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include "menu.h"
 
 #define BUFFERSIZE 4096
 #define PORT 4444
@@ -49,6 +50,8 @@ int main() {
     }
 
     while(true) {
+        int choice = menu();
+
         std::string cmd;
         std::getline(std::cin, cmd);
 
