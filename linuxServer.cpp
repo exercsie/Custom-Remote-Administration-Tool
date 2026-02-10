@@ -52,20 +52,28 @@ int main() {
     while(true) {
         int choice = menu();
 
-        std::string cmd;
-        std::getline(std::cin, cmd);
+        if(choice == 1) {
+            int type = TEXT;
+            send(clientFileDescriptor, &type, sizeof(type), 0);
 
-        if(cmd == "exit") {
+            std::string cmd;
+            std::cout << "Type here: ";
+            std::getline(std::cin, cmd);
+
             send(clientFileDescriptor, cmd.c_str(), cmd.size(), 0);
-            break;
+
+            memset(buffer, 0, BUFFERSIZE);
+            recv(clientFileDescriptor, buffer, BUFFERSIZE, 0);
+
+            std::cout << buffer << std::endl;
+
         }
 
-        send(clientFileDescriptor, cmd.c_str(), cmd.size(), 0);
-
-        memset(buffer, 0, BUFFERSIZE);
-        recv(clientFileDescriptor, buffer, BUFFERSIZE, 0);
-
-        std::cout << buffer << std::endl;
+        if(choice == 3) {
+            int type = EXIT;
+            send(clientFileDescriptor, &type, sizeof(type), 0);
+            break;
+        }
     }
 
     return 0;
