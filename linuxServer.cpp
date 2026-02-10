@@ -78,6 +78,11 @@ int main() {
             }
         }
 
+        if(choice == 2) {
+            int type = FILE;
+            send(clientFileDescriptor, &type, sizeof(type), 0);
+        }
+
         if(choice == 3) {
             int type = EXIT;
             send(clientFileDescriptor, &type, sizeof(type), 0);
