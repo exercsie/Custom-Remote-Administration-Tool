@@ -8,7 +8,7 @@
 
 int main(int argc, char* argv[]) {
     if(argc < 2) {
-        std::cout << "Please use \"./windowsVictim [ip]\"\n";
+        std::cout << "Please type: ./victim [IP]\n";
         return 1;
     }
     sockaddr_in serverAddress;
@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
     std::string serverip = argv[1];
 
     if(inet_pton(AF_INET, serverip.c_str(), &serverAddress.sin_addr) <= 0) {
-        std::cout << "invalid ip address\n";
+        std::cout << "Invalid ip address\n";
         return 1;
     }
 
