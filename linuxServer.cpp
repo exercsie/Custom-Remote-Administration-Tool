@@ -53,7 +53,7 @@ int main() {
         int choice = menu();
 
         if(choice == 1) {
-            int type = TEXT;
+            int type = TYPE_TEXT;
             send(clientFileDescriptor, &type, sizeof(type), 0);
 
             std::cout << "Type /back to return to the menu.\n";
@@ -64,12 +64,12 @@ int main() {
                 std::getline(std::cin, cmd);
 
                 if(cmd == "/back") {
-                    int back = BACK;
+                    int back = TYPE_BACK;
                     send(clientFileDescriptor, &back, sizeof(back), 0);
                     break;
                 }
 
-                int msg = TEXT;
+                int msg = TYPE_TEXT;
                 send(clientFileDescriptor, &msg, sizeof(msg), 0);
                 send(clientFileDescriptor, cmd.c_str(), cmd.size(), 0);
 
@@ -81,12 +81,19 @@ int main() {
         }
 
         if(choice == 2) {
-            int type = FILE;
+            int type = TYPE_FILE;
             send(clientFileDescriptor, &type, sizeof(type), 0);
+            
+            std::string path;
+            std::cout << "Enter path: ";
+            std::getline(std::cin, path);
+
+            FILE* file = fopen(path.c_str(), "rb");
+
         }
 
         if(choice == 3) {
-            int type = EXIT;
+            int type = TYPE_EXIT;
             send(clientFileDescriptor, &type, sizeof(type), 0);
             break;
         }

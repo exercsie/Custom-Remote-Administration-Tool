@@ -1,6 +1,8 @@
-#define TEXT 1
-#define FILE 2
-#define EXIT 3
-#define BACK 4
+enum MessageType {
+    TYPE_TEXT = 1,
+    TYPE_FILE = 2,
+    TYPE_EXIT = 3,
+    TYPE_BACK = 4
+};
 
 int menu();
