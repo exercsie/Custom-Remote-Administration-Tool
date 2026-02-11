@@ -69,6 +69,8 @@ int main() {
                     break;
                 }
 
+                int msg = TEXT;
+                send(clientFileDescriptor, &msg, sizeof(msg), 0);
                 send(clientFileDescriptor, cmd.c_str(), cmd.size(), 0);
 
                 memset(buffer, 0, BUFFERSIZE);
