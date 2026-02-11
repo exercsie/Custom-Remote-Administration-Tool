@@ -80,6 +80,21 @@ int main(int argc, char* argv[]) {
                 std::cout << "Cannot receive file information\n";
                 continue;
             }
+
+            int fileName;
+            bytesRec = recv(sock, (char*)&fileName, sizeof(fileName), 0);
+            if (bytesRec <= 0) {
+                std::cout << "Cannot retrieve file name length\n";
+                continue;
+            }
+
+            char* fileNameBuffer = new char[fileName + 1];
+            bytesRec = recv(sock, fileNameBuffer, fileName, 0);
+            fileNameBuffer[fileName] = '\0';
+            std::string filename(fileNameBuffer);
+            delete[] fileNameBuffer;
+
+            std::cout << "File: " << filename << " has " << fileSize << " bytes\n";
         }
 
         }

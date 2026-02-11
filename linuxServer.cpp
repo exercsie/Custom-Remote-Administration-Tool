@@ -100,8 +100,12 @@ int main() {
             fseek(file, 0, SEEK_END);
             fseek(file, 0, SEEK_SET);
             long fileSize = ftell(file);
-
             send(clientFileDescriptor, &fileSize, sizeof(fileSize), 0);
+
+            std::string fileName = path.substr(path.find_last_of("/\\") + 1);
+            int nameLength = fileName.size();
+            send(clientFileDescriptor, &nameLength, sizeof(nameLength), 0);
+            send(clientFileDescriptor, fileName.c_str(), nameLength, 0);
         }
 
         if(choice == 3) {
