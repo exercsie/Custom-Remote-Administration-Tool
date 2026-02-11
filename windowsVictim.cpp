@@ -72,6 +72,15 @@ int main(int argc, char* argv[]) {
 
         std::string clientMessage = "\nClient received: " + cmd;
         send(sock, clientMessage.c_str(), clientMessage.size(), 0);
+        
+        if(type == 2) {
+            long fileSize;
+            bytesRec = recv(sock, (char*)&fileSize, sizeof(fileSize), 0);
+            if(bytesRec < 0 || fileSize < 0) {
+                std::cout << "Cannot receive file information\n";
+                continue;
+            }
+        }
 
         }
 

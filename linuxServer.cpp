@@ -96,6 +96,12 @@ int main() {
                 send(clientFileDescriptor, &error, sizeof(error), 0);
                 continue;
             }
+
+            fseek(file, 0, SEEK_END);
+            fseek(file, 0, SEEK_SET);
+            long fileSize = ftell(file);
+
+            send(clientFileDescriptor, &fileSize, sizeof(fileSize), 0);
         }
 
         if(choice == 3) {
