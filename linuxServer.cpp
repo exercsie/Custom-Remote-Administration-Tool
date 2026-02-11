@@ -53,6 +53,9 @@ int main() {
         int choice = menu();
 
         if(choice == 1) {
+            int type = TEXT;
+            send(clientFileDescriptor, &type, sizeof(type), 0);
+
             std::cout << "Type /back to return to the menu.\n";
 
             while(true) {
@@ -66,8 +69,6 @@ int main() {
                     break;
                 }
 
-                int msg = TEXT;
-                send(clientFileDescriptor, &msg, sizeof(msg), 0);
                 send(clientFileDescriptor, cmd.c_str(), cmd.size(), 0);
 
                 memset(buffer, 0, BUFFERSIZE);
