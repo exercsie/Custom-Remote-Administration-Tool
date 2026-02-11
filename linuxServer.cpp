@@ -90,6 +90,12 @@ int main() {
 
             FILE* file = fopen(path.c_str(), "rb");
 
+            if(!file) {
+                std::cout << "\nCannot open file\n";
+                int error = -1;
+                send(clientFileDescriptor, &error, sizeof(error), 0);
+                continue;
+            }
         }
 
         if(choice == 3) {
