@@ -42,23 +42,33 @@ int main() {
     }
 
     while(true) {
-        memset(buffer, 0, BUFFERSIZE);
-        int bytesRec = recv(sock, buffer, BUFFERSIZE, 0);
+        int type;
+        int bytesRec = recv(sock, (char*)&type, sizeof(type), 0);
         if(bytesRec <= 0) {
             std::cout << SERVER_STATUS_CLOSED;
             break;
         }
 
+        if(type == 1) {
+            memset(buffer, 0, BUFFERSIZE);
+
+            bytesRec = recv(sock, buffer, BUFFERSIZE, 0);
+            if(bytesRec <= 0) {
+                std::cout << SERVER_STATUS_CLOSED;
+                break;
+            }
         std::string cmd(buffer);
         std::cout << "Attacker: " << cmd << std::endl;
 
-        if(cmd == "exit") {
+        std::string clientMessage = "\nClient received: " + cmd;
+        send(sock, clientMessage.c_str(), clientMessage.size(), 0);
+
+        }
+
+        if(type == 3) {
             std::cout << SERVER_STATUS_CLOSED;
             break;
         }
-
-        std::string clientMessage = "\nClient received: " + cmd;
-        send(sock, clientMessage.c_str(), clientMessage.size(), 0);
     }
     closesocket(sock);
     WSACleanup;
