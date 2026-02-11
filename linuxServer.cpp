@@ -106,6 +106,16 @@ int main() {
             int nameLength = fileName.size();
             send(clientFileDescriptor, &nameLength, sizeof(nameLength), 0);
             send(clientFileDescriptor, fileName.c_str(), nameLength, 0);
+
+            char fileBuffer[BUFFERSIZE];
+            long dataSent = 0;
+            while (dataSent < fileSize) {
+                size_t readBytes = fread(fileBuffer, 1, BUFFERSIZE, file);
+                send(clientFileDescriptor, fileBuffer, readBytes, 0);
+                dataSent += readBytes;
+            }
+            fclose(file);
+            std::cout << "Sent the file: " << fileName << " which has " << fileSize << " bytes\n";
         }
 
         if(choice == 3) {

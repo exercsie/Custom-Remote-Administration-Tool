@@ -95,6 +95,25 @@ int main(int argc, char* argv[]) {
             delete[] fileNameBuffer;
 
             std::cout << "File: " << filename << " has " << fileSize << " bytes\n";
+
+            FILE* fileOutput = fopen(filename.c_str(), "wb");
+            if(!fileOutput) {
+                std::cout << "Cannot create file\n";
+            }
+
+            long dataRec = 0;
+            while (dataRec < fileSize) {
+                int receive = (fileSize - dataRec > BUFFERSIZE) ? BUFFERSIZE : (fileSize - dataRec);
+                bytesRec = recv(sock, buffer, receive, 0);
+                if (bytesRec <= 0) {
+                    break;
+                }
+                fwrite(buffer, 1, bytesRec, fileOutput);
+                dataRec += bytesRec;
+            }
+
+            fclose(fileOutput);
+            std::cout << "File received: " << filename << std::endl;
         }
 
         }
