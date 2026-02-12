@@ -67,11 +67,13 @@ int main(int argc, char* argv[]) {
                 std::cout << SERVER_STATUS_CLOSED;
                 break;
             }
-        std::string cmd(buffer);
-        std::cout << "Attacker: " << cmd << std::endl;
+            std::string cmd(buffer);
+            std::cout << "Attacker: " << cmd << std::endl;
 
-        std::string clientMessage = "\nClient received: " + cmd;
-        send(sock, clientMessage.c_str(), clientMessage.size(), 0);
+            std::string clientMessage = "\nClient received: " + cmd;
+            send(sock, clientMessage.c_str(), clientMessage.size(), 0);
+        
+        }
         
         if(type == 2) {
             long fileSize;
@@ -102,8 +104,9 @@ int main(int argc, char* argv[]) {
             FILE* fileOutput = fopen(path.c_str(), "wb");
             if(!fileOutput) {
                 std::cout << "Cannot create file\n";
+                continue;
             }
-
+        
             long dataRec = 0;
             while (dataRec < fileSize) {
                 int receive = (fileSize - dataRec > BUFFERSIZE) ? BUFFERSIZE : (fileSize - dataRec);
@@ -123,8 +126,8 @@ int main(int argc, char* argv[]) {
             std::cout << SERVER_STATUS_CLOSED;
             break;
         }
+        closesocket(sock);
+        WSACleanup();
+        return 0;
     }
-    closesocket(sock);
-    WSACleanup();
-    return 0;
 }
