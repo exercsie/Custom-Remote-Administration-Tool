@@ -1,6 +1,7 @@
 #include <winsock2.h>
 #include <iostream>
 #include <ws2tcpip.h>
+#include <cstdint>
 
 #define PORT 4444
 #define BUFFERSIZE 4096
@@ -76,30 +77,35 @@ int main(int argc, char* argv[]) {
         }
         
         if(type == 2) {
-            long fileSize;
+            int64_t fileSize;
             bytesRec = recv(sock, (char*)&fileSize, sizeof(fileSize), 0);
+            std::cout << "Received fileSize of bytes" << bytesRec << ", with a fileSize of " << fileSize << std::endl;
             if(bytesRec < 0 || fileSize < 0) {
                 std::cout << "Cannot receive file information\n";
                 continue;
             }
 
-            int fileName;
-            bytesRec = recv(sock, (char*)&fileName, sizeof(fileName), 0);
+            int32_t fileNameLeng;
+            bytesRec = recv(sock, (char*)&fileNameLeng, sizeof(fileNameLeng), 0);
+                std::cout << "Received nameLength of bytes " << bytesRec << ", and nameLength is " << fileNameLeng << std::endl;
             if (bytesRec <= 0) {
                 std::cout << "Cannot retrieve file name length\n";
                 continue;
             }
 
-            char* fileNameBuffer = new char[fileName + 1];
-            bytesRec = recv(sock, fileNameBuffer, fileName, 0);
-            fileNameBuffer[fileName] = '\0';
+            char* fileNameBuffer = new char[fileNameLeng + 1];
+            bytesRec = recv(sock, fileNameBuffer, fileNameLeng, 0);
+            std::cout << "Received filename of bytes " << bytesRec << std::endl;
+            fileNameBuffer[fileNameLeng] = '\0';
             std::string filename(fileNameBuffer);
             delete[] fileNameBuffer;
 
-            std::string path = "C:\\Downloads\\" + filename;
+            std::cout << "The Filename is '" << filename << "', and Length is " << filename.length() << std::endl;
+
+            std::string path = filename;
 
             std::cout << "File: " << filename << " has " << fileSize << " bytes\n";
-            std::cout << "Saving the file to " << path << std::endl;
+            std::cout << "Saving the file to " << filename << std::endl;
 
             FILE* fileOutput = fopen(path.c_str(), "wb");
             if(!fileOutput) {
@@ -107,7 +113,7 @@ int main(int argc, char* argv[]) {
                 continue;
             }
         
-            long dataRec = 0;
+            int64_t dataRec = 0;
             while (dataRec < fileSize) {
                 int receive = (fileSize - dataRec > BUFFERSIZE) ? BUFFERSIZE : (fileSize - dataRec);
                 bytesRec = recv(sock, buffer, receive, 0);
@@ -119,7 +125,7 @@ int main(int argc, char* argv[]) {
             }
 
             fclose(fileOutput);
-            std::cout << "File received: " << path << std::endl;
+            std::cout << "File received: " << filename << std::endl;
         }
 
         if(type == 3) {

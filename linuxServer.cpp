@@ -80,10 +80,7 @@ int main() {
             }
         }
 
-        if(choice == 2) {
-            int type = TYPE_FILE;
-            send(clientFileDescriptor, &type, sizeof(type), 0);
-            
+        if(choice == 2) {           
             std::string path;
             std::cout << "Enter path: ";
             std::getline(std::cin, path);
@@ -92,23 +89,33 @@ int main() {
 
             if(!file) {
                 std::cout << "\nCannot open file\n";
-                int error = -1;
-                send(clientFileDescriptor, &error, sizeof(error), 0);
                 continue;
             }
 
             fseek(file, 0, SEEK_END);
-            long fileSize = ftell(file);
+            int64_t fileSize = ftell(file);
             fseek(file, 0, SEEK_SET);
+
+            std::string fileName;
+            size_t p = path.find_last_of("/\\");
+            if (p != std::string::npos) {
+                fileName = path.substr(p + 1);
+            } else {
+                fileName = path;
+            }
+
+            std::cout << "Sending filename: '" << fileName << "', with a length of " << fileName.size() << std::endl;
+
+            int type = TYPE_FILE;
+            send(clientFileDescriptor, &type, sizeof(type), 0);
             send(clientFileDescriptor, &fileSize, sizeof(fileSize), 0);
 
-            std::string fileName = path.substr(path.find_last_of("/\\") + 1);
-            int nameLength = fileName.size();
+            int32_t nameLength = fileName.size();
             send(clientFileDescriptor, &nameLength, sizeof(nameLength), 0);
             send(clientFileDescriptor, fileName.c_str(), nameLength, 0);
 
             char fileBuffer[BUFFERSIZE];
-            long dataSent = 0;
+            int64_t dataSent = 0;
             while (dataSent < fileSize) {
                 size_t readBytes = fread(fileBuffer, 1, BUFFERSIZE, file);
                 send(clientFileDescriptor, fileBuffer, readBytes, 0);
