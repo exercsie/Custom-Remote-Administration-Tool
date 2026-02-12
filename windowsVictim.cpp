@@ -132,8 +132,8 @@ int main(int argc, char* argv[]) {
             std::cout << SERVER_STATUS_CLOSED;
             break;
         }
-        closesocket(sock);
-        WSACleanup();
-        return 0;
     }
+    closesocket(sock);
+    WSACleanup();
+    return 0;
 }
