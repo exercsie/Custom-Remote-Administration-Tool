@@ -94,9 +94,12 @@ int main(int argc, char* argv[]) {
             std::string filename(fileNameBuffer);
             delete[] fileNameBuffer;
 
-            std::cout << "File: " << filename << " has " << fileSize << " bytes\n";
+            std::string path = "C:\\Downloads\\" + filename;
 
-            FILE* fileOutput = fopen(filename.c_str(), "wb");
+            std::cout << "File: " << filename << " has " << fileSize << " bytes\n";
+            std::cout << "Saving the file to " << path << std::endl;
+
+            FILE* fileOutput = fopen(path.c_str(), "wb");
             if(!fileOutput) {
                 std::cout << "Cannot create file\n";
             }
@@ -113,9 +116,7 @@ int main(int argc, char* argv[]) {
             }
 
             fclose(fileOutput);
-            std::cout << "File received: " << filename << std::endl;
-        }
-
+            std::cout << "File received: " << path << std::endl;
         }
 
         if(type == 3) {
