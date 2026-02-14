@@ -6,6 +6,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include "menu.h"
+#include <unistd.h>
 
 #define BUFFERSIZE 4096
 #define PORT 4444
@@ -52,7 +53,7 @@ int main() {
     while(true) {
         int choice = menu();
 
-        if(choice == 1) {
+        if(choice == TYPE_TEXT) {
             std::cout << "Type /back to return to the menu.\n";
 
             while(true) {
@@ -77,7 +78,7 @@ int main() {
             }
         }
 
-        if(choice == 2) {           
+        if(choice == TYPE_FILE) {           
             std::string path;
             std::cout << "Enter path: ";
             std::getline(std::cin, path);
@@ -101,7 +102,7 @@ int main() {
                 fileName = path;
             }
 
-            std::cout << "Sending filename: '" << fileName << "', with a length of " << fileName.size() << std::endl;
+            std::cout << "Sending the file: '" << fileName << "'" << std::endl;
 
             int type = TYPE_FILE;
             send(clientFileDescriptor, &type, sizeof(type), 0);
@@ -119,10 +120,10 @@ int main() {
                 dataSent += readBytes;
             }
             fclose(file);
-            std::cout << "Sent the file: " << fileName << " which has " << fileSize << " bytes\n";
+            std::cout << "Sent the file: " << fileName << " " << fileSize << " bytes\n";
         }
 
-        if(choice == 3) {
+        if(choice == TYPE_EXIT) {
             int type = TYPE_EXIT;
             send(clientFileDescriptor, &type, sizeof(type), 0);
             break;
