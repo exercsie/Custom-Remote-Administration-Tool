@@ -6,7 +6,7 @@ int menu() {
     int choice;
 
     while(true) {
-        std::cout << CONSOLE_PREFIX << " Elenchos RAT tool (C++ 1.2)\n" << std::endl;
+        std::cout << "\n" << CONSOLE_PREFIX << " Elenchos RAT tool (C++ 1.2)\n" << std::endl;
         std::cout << CONSOLE_PREFIX << " 1 - Send messages\n";
         std::cout << CONSOLE_PREFIX << " 2 - Send files\n";
         std::cout << CONSOLE_PREFIX << " 3 - Exit\n" << std::endl;

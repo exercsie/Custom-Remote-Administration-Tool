@@ -28,6 +28,7 @@ int main() {
     serverAddress.sin_port = htons(PORT); // htons converts port to network byte order
     if(bind(serverFileDescripter, (sockaddr*) &serverAddress, sizeof(serverAddress)) < 0) {
         std::cout << ERROR_PREFIX << " Bind failed to create\n";
+        perror(ERROR_PREFIX);
         return 1;
     } else {
         std::cout << SUCCESS_PREFIX << " Bind created\n";
@@ -44,7 +45,7 @@ int main() {
     if(clientFileDescriptor < 0) {
         std::cout << ERROR_PREFIX << " Connection failed\n";
     } else {
-        std::cout << SUCCESS_PREFIX << " Connection established\n" << std::endl;
+        std::cout << SUCCESS_PREFIX << " Connection established\n";
     }
 
     while(true) {
