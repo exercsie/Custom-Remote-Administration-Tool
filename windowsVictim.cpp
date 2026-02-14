@@ -2,6 +2,7 @@
 #include <iostream>
 #include <ws2tcpip.h>
 #include <cstdint>
+#include "menu.h"
 
 #define PORT 4444
 #define BUFFERSIZE 4096
@@ -71,7 +72,7 @@ int main(int argc, char* argv[]) {
             std::string cmd(buffer);
             std::cout << "Attacker: " << cmd << std::endl;
 
-            std::string clientMessage = "\nClient received: " + cmd;
+            std::string clientMessage = "Client received: " + cmd + '\n';
             send(sock, clientMessage.c_str(), clientMessage.size(), 0);
         
         }

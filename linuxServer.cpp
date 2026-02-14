@@ -53,9 +53,6 @@ int main() {
         int choice = menu();
 
         if(choice == 1) {
-            int type = TYPE_TEXT;
-            send(clientFileDescriptor, &type, sizeof(type), 0);
-
             std::cout << "Type /back to return to the menu.\n";
 
             while(true) {
