@@ -8,9 +8,6 @@
 #include "menu.h"
 #include <unistd.h>
 
-#define BUFFERSIZE 4096
-#define PORT 4444
-
 int main() {
     sockaddr_in serverAddress{}, clientAddress{};
     socklen_t clientLength = sizeof(clientAddress);
@@ -20,45 +17,45 @@ int main() {
 
     serverFileDescripter = socket(AF_INET, SOCK_STREAM, 0);
     if(serverFileDescripter < 0) {
-        perror("Socket not created\n");
+        std::cout << ERROR_PREFIX << " Socket failed to create\n";
         return 1;
     } else if(serverFileDescripter == 3) {
-        std::cout << "Socket created successfully\n";
+        std::cout << SUCCESS_PREFIX << " Socket created\n";
     }
 
     serverAddress.sin_family = AF_INET; // IPv4
     serverAddress.sin_addr.s_addr = INADDR_ANY; // ip address to bind to
     serverAddress.sin_port = htons(PORT); // htons converts port to network byte order
     if(bind(serverFileDescripter, (sockaddr*) &serverAddress, sizeof(serverAddress)) < 0) {
-        perror("Bind failed\n");
+        std::cout << ERROR_PREFIX << " Bind failed to create\n";
         return 1;
     } else {
-        std::cout << "Bind successful\n";
+        std::cout << SUCCESS_PREFIX << " Bind created\n";
     }
 
     if(listen(serverFileDescripter, 1) < 0) {
-        perror("Failed to find incoming connection requests\n");
+        std::cout << ERROR_PREFIX << " Failed to find incoming connection requests\n";
         return 1;
     } else {
-        std::cout << "Listening on port " << PORT << std::endl; 
+        std::cout << PENDING_PREFIX << " Listening on port: " << PORT << std::endl; 
     }
 
     clientFileDescriptor = accept(serverFileDescripter, (sockaddr*) &clientAddress, &clientLength);
     if(clientFileDescriptor < 0) {
-        perror("Client connection failed\n");
+        std::cout << ERROR_PREFIX << " Connection failed\n";
     } else {
-        std::cout << "Client connected\n";
+        std::cout << SUCCESS_PREFIX << " Connection established\n" << std::endl;
     }
 
     while(true) {
         int choice = menu();
 
         if(choice == TYPE_TEXT) {
-            std::cout << "Type /back to return to the menu.\n";
+            std::cout << CONSOLE_PREFIX << " Type /back to return to the menu.\n";
 
             while(true) {
                 std::string cmd;
-                std::cout << "Type here: ";
+                std::cout << CONSOLE_PREFIX << " Type here: ";
                 std::getline(std::cin, cmd);
 
                 if(cmd == "/back") {
@@ -80,13 +77,13 @@ int main() {
 
         if(choice == TYPE_FILE) {           
             std::string path;
-            std::cout << "Enter path: ";
+            std::cout << CONSOLE_PREFIX << " Enter path: ";
             std::getline(std::cin, path);
 
             FILE* file = fopen(path.c_str(), "rb");
 
             if(!file) {
-                std::cout << "\nCannot open file\n";
+                std::cout << ERROR_PREFIX << " Cannot send file\n";
                 continue;
             }
 
@@ -102,7 +99,7 @@ int main() {
                 fileName = path;
             }
 
-            std::cout << "Sending the file: '" << fileName << "'" << std::endl;
+            std::cout << PENDING_PREFIX << " Sending the file: '" << fileName << "'" << std::endl;
 
             int type = TYPE_FILE;
             send(clientFileDescriptor, &type, sizeof(type), 0);
@@ -120,7 +117,7 @@ int main() {
                 dataSent += readBytes;
             }
             fclose(file);
-            std::cout << "Sent the file: " << fileName << " " << fileSize << " bytes\n";
+            std::cout << SUCCESS_PREFIX << " Sent the file: '" << fileName << "' " << fileSize << " bytes\n";
         }
 
         if(choice == TYPE_EXIT) {
