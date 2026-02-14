@@ -63,6 +63,8 @@ int main() {
                     int back = TYPE_BACK;
                     send(clientFileDescriptor, &back, sizeof(back), 0);
                     break;
+                } else if (cmd.empty()) {
+                    continue;
                 }
 
                 int msg = TYPE_TEXT;
@@ -80,6 +82,7 @@ int main() {
             std::string path;
             std::cout << CONSOLE_PREFIX << " Enter path: ";
             std::getline(std::cin, path);
+            std::cout << std::endl;
 
             FILE* file = fopen(path.c_str(), "rb");
 
