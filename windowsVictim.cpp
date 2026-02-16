@@ -4,7 +4,7 @@
 #include <cstdint>
 #include "menu.h"
 #include <direct.h>
-#include <"Encryption-Techniques/CaesarCipherShift.h">
+#include "Encryption-Techniques/CaesarCipherShift.h"
 
 int main(int argc, char* argv[]) {
     if(argc < 2) {
@@ -111,14 +111,14 @@ int main(int argc, char* argv[]) {
             int64_t dataRec = 0;
             while (dataRec < fileSize) {
                 int receive = (fileSize - dataRec > BUFFERSIZE) ? BUFFERSIZE : (fileSize - dataRec);
-
-                // decrypt
-                caesarDecrypt(char buffer, bytesRec);
-
                 bytesRec = recv(sock, buffer, receive, 0);
                 if (bytesRec <= 0) {
                     break;
                 }
+
+                // decrypt
+                caesarDecrypt(buffer, bytesRec);
+
                 fwrite(buffer, 1, bytesRec, fileOutput);
                 dataRec += bytesRec;
                 std::cout << SUCCESS_PREFIX << " Saved file to: " << path << std::endl;

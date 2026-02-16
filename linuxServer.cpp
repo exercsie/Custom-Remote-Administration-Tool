@@ -120,7 +120,7 @@ int main() {
                 size_t readBytes = fread(fileBuffer, 1, BUFFERSIZE, file);
 
                 // encryption
-                caesarE
+                caesarEncryption(buffer, bytesRec);
 
                 send(clientFileDescriptor, fileBuffer, readBytes, 0);
                 dataSent += readBytes;
