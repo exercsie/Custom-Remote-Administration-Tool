@@ -116,20 +116,19 @@ int main() {
 
             char fileBuffer[BUFFERSIZE];
             int64_t dataSent = 0;
+            std::cout << PENDING_PREFIX << " Encrypting the file: '" << fileName << "'...." << std::endl;
             while (dataSent < fileSize) {
                 size_t readBytes = fread(fileBuffer, 1, BUFFERSIZE, file);
 
                 // encryption
-                std::cout << PENDING_PREFIX << " Encrypting the file: '" << fileName << "'...." << std::endl;
-                std::cout << SUCCESS_PREFIX << " File encrypted" << std::endl;
                 caesarEncrypt(fileBuffer, readBytes);
 
-                std::cout << std::endl;
-
-                std::cout << PENDING_PREFIX << " Sending the file: '" << fileName << "' of size " << fileSize << " bytes" << std::endl;
                 send(clientFileDescriptor, fileBuffer, readBytes, 0);
                 dataSent += readBytes;
             }
+            std::cout << PENDING_PREFIX << " Sending the file: '" << fileName << "' of size " << fileSize << " bytes" << std::endl;
+            std::cout << std::endl;
+            std::cout << SUCCESS_PREFIX << " File encrypted" << std::endl;
             fclose(file);
 
             if(file) {

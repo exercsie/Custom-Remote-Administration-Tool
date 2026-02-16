@@ -81,10 +81,10 @@ int main(int argc, char* argv[]) {
             if(bytesRec <= 0) {
                 std::cout << ERROR_PREFIX << " Cannot receive encryption key\n";
                 continue;
+            } else {
+                receiverKey(encryptKey);
+                std::cout << SUCCESS_PREFIX << " Received encryption key: " << SHIFT << std::endl;
             }
-
-            receiverKey(encryptKey);
-            std::cout << SUCCESS_PREFIX << " Received encryption key: " << SHIFT << std::endl;
 
             int64_t fileSize;
             bytesRec = recv(sock, (char*)&fileSize, sizeof(fileSize), 0);
@@ -131,8 +131,8 @@ int main(int argc, char* argv[]) {
 
                 fwrite(buffer, 1, bytesRec, fileOutput);
                 dataRec += bytesRec;
-                std::cout << SUCCESS_PREFIX << " Saved file to: " << path << std::endl;
             }
+            std::cout << SUCCESS_PREFIX << " Saved file to: " << path << std::endl;
 
             fclose(fileOutput);
         }
