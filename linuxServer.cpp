@@ -7,6 +7,7 @@
 #include <netinet/in.h>
 #include "menu.h"
 #include <unistd.h>
+#include "Encryption-Techniques/CaesarCipherShift.h"
 
 int main() {
     sockaddr_in serverAddress{}, clientAddress{};
@@ -117,6 +118,10 @@ int main() {
             int64_t dataSent = 0;
             while (dataSent < fileSize) {
                 size_t readBytes = fread(fileBuffer, 1, BUFFERSIZE, file);
+
+                // encryption
+                caesarE
+
                 send(clientFileDescriptor, fileBuffer, readBytes, 0);
                 dataSent += readBytes;
             }
