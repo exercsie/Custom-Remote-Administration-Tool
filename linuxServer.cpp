@@ -108,6 +108,10 @@ int main() {
 
             int type = TYPE_FILE;
             send(clientFileDescriptor, &type, sizeof(type), 0);
+
+            send(clientFileDescriptor, &SHIFT, sizeof(SHIFT), 0);
+            std::cout << PENDING_PREFIX << " Sending encryption key: " << SHIFT << std::endl;
+
             send(clientFileDescriptor, &fileSize, sizeof(fileSize), 0);
 
             int32_t nameLength = fileName.size();
@@ -120,7 +124,7 @@ int main() {
                 size_t readBytes = fread(fileBuffer, 1, BUFFERSIZE, file);
 
                 // encryption
-                caesarEncryption(buffer, bytesRec);
+                caesarEncrypt(fileBuffer, readBytes);
 
                 send(clientFileDescriptor, fileBuffer, readBytes, 0);
                 dataSent += readBytes;
