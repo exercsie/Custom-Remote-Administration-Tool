@@ -87,11 +87,6 @@ int main() {
 
             FILE* file = fopen(path.c_str(), "rb");
 
-            if(!file) {
-                std::cout << ERROR_PREFIX << " Cannot send file\n";
-                continue;
-            }
-
             fseek(file, 0, SEEK_END);
             int64_t fileSize = ftell(file);
             fseek(file, 0, SEEK_SET);
@@ -104,13 +99,14 @@ int main() {
                 fileName = path;
             }
 
-            std::cout << PENDING_PREFIX << " Sending the file: '" << fileName << "'" << std::endl;
-
             int type = TYPE_FILE;
             send(clientFileDescriptor, &type, sizeof(type), 0);
 
+            std::cout << PENDING_PREFIX << " Generating the encryption key...." << std::endl;
             send(clientFileDescriptor, &SHIFT, sizeof(SHIFT), 0);
-            std::cout << PENDING_PREFIX << " Sending encryption key: " << SHIFT << std::endl;
+            std::cout << SUCCESS_PREFIX << " Sent the encryption key: " << SHIFT << std::endl;
+
+            std::cout << std::endl;
 
             send(clientFileDescriptor, &fileSize, sizeof(fileSize), 0);
 
@@ -124,13 +120,23 @@ int main() {
                 size_t readBytes = fread(fileBuffer, 1, BUFFERSIZE, file);
 
                 // encryption
+                std::cout << PENDING_PREFIX << " Encrypting the file: '" << fileName << "'...." << std::endl;
+                std::cout << SUCCESS_PREFIX << " File encrypted" << std::endl;
                 caesarEncrypt(fileBuffer, readBytes);
 
+                std::cout << std::endl;
+
+                std::cout << PENDING_PREFIX << " Sending the file: '" << fileName << "' of size " << fileSize << " bytes" << std::endl;
                 send(clientFileDescriptor, fileBuffer, readBytes, 0);
                 dataSent += readBytes;
             }
             fclose(file);
-            std::cout << SUCCESS_PREFIX << " Sent the file: '" << fileName << "' " << fileSize << " bytes\n";
+
+            if(file) {
+                std::cout << SUCCESS_PREFIX << " File sent" << std::endl;
+            } else {
+                std::cout << ERROR_PREFIX << " Cannot send file" << std::endl;
+            }
         }
 
         if(choice == TYPE_EXIT) {

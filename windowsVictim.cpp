@@ -78,11 +78,13 @@ int main(int argc, char* argv[]) {
         if(type == TYPE_FILE) {
             int encryptKey;
             bytesRec = recv(sock, (char*)&encryptKey, sizeof(encryptKey), 0);
-            std::cout << SUCCESS_PREFIX << " Received encryption key: " << SHIFT << std::endl;
             if(bytesRec <= 0) {
                 std::cout << ERROR_PREFIX << " Cannot receive encryption key\n";
                 continue;
             }
+
+            receiverKey(encryptKey);
+            std::cout << SUCCESS_PREFIX << " Received encryption key: " << SHIFT << std::endl;
 
             int64_t fileSize;
             bytesRec = recv(sock, (char*)&fileSize, sizeof(fileSize), 0);
