@@ -1,4 +1,4 @@
-#include "Encryption-Techniques/CaesarCipherShift.h"
+#include "CaesarCipherShift.h"
 
 int SHIFT = 0;
 
