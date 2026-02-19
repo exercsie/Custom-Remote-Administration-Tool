@@ -31,5 +31,12 @@ std::string getSystemInfo() {
 
     info << SUCCESS_PREFIX << " Client has " << sysInfo.dwNumberOfProcessors << " processors\n";
 
+    MEMORYSTATUSEX memoryInfo;
+    memoryInfo.dwLength = sizeof(MEMORYSTATUSEX);
+    if(GlobalMemoryStatusEx(&memoryInfo)) {
+        info << SUCCESS_PREFIX << " Total RAM: " << (memoryInfo.ullTotalPhys / ( 1024 * 1024 * 1024)) << " GB\n";
+        info << SUCCESS_PREFIX << " Avaliable RAM: " << (memoryInfo.ullAvailPhys / (1024 * 1024 * 1024)) << " GB\n";
+    }
+
     return info.str();
 }
