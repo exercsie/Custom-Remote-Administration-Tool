@@ -142,11 +142,10 @@ int main() {
             int type = TYPE_INFO;
             send(clientFileDescriptor, &type, sizeof(type), 0);
 
-            std::cout << PENDING_PREFIX << " Requesting system information..\n";
+            std::cout << PENDING_PREFIX << " Requesting system information..\n\n";
 
             char clientsIP[INET_ADDRSTRLEN];
             inet_ntop(AF_INET, &clientAddress.sin_addr, clientsIP, INET_ADDRSTRLEN);
-            std::cout << SUCCESS_PREFIX << " Client IP: " << clientsIP <<  std::endl;
 
             int32_t infoLength;
             int bytesRec = recv(clientFileDescriptor, &infoLength, sizeof(infoLength), 0);
@@ -155,7 +154,15 @@ int main() {
                 char *infoBuffer = new char[infoLength + 1];
                 bytesRec = recv(clientFileDescriptor, infoBuffer, infoLength, 0);
 
-                std::cout << infoBuffer;
+                if (bytesRec > 0) {
+                    std::cout << CONSOLE_PREFIX << " |!|!|!|!|!|!| CLIENT INFORMATION |!|!|!|!|!|!|\n";
+                    std::cout << SUCCESS_PREFIX << " Client IP: " << clientsIP <<  std::endl;
+                    std::cout << infoBuffer;
+                    std::cout << CONSOLE_PREFIX << " |!|!|!|!|!|!| ------------------ |!|!|!|!|!|!|\n";
+                } else {
+                    std::cout << ERROR_PREFIX << " Failed to receive client information\n";
+                }
+
             }
 
 
