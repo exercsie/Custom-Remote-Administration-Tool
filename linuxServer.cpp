@@ -139,7 +139,16 @@ int main() {
         }
 
         if(choice == TYPE_INFO) {
-            
+            int type = TYPE_INFO;
+            send(clientFileDescriptor, &type, sizeof(type), 0);
+
+            std::cout << PENDING_PREFIX << " Requesting system information..\n";
+
+            char clientsIP[INET_ADDRSTRLEN];
+            inet_ntop(AF_INET, &clientAddress.sin_addr, clientsIP, INET_ADDRSTRLEN);
+            std::cout << SUCCESS_PREFIX << " Client IP: " << clientsIP <<  std::endl;
+
+
         }
 
         if(choice == TYPE_EXIT) {

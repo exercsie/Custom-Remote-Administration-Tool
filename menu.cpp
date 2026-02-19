@@ -19,10 +19,10 @@ int menu() {
         if (std::cin.fail()) {
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << ERROR_PREFIX << " Invalid usage, please enter a number between 1-3.\n";
+            std::cout << ERROR_PREFIX << " Invalid usage, please enter a number between 1-4.\n";
             continue;
-        } else if (!(choice >= 1 && choice <= 3)) {
-            std::cout << ERROR_PREFIX << " Invalid usage, please enter a number between 1-3.\n";
+        } else if (!(choice >= 1 && choice <= 4)) {
+            std::cout << ERROR_PREFIX << " Invalid usage, please enter a number between 1-4.\n";
             continue;
         }
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');

@@ -4,6 +4,8 @@
 #include <cstdint>
 #include "menu.h"
 #include <direct.h>
+#include <windows.h>
+#include <sstream>
 #include "Encryption-Techniques/CaesarCipherShift.h"
 
 int main(int argc, char* argv[]) {
@@ -138,7 +140,7 @@ int main(int argc, char* argv[]) {
         }
 
         if (type == TYPE_INFO) {
-            
+            std::cout << SUCCESS_PREFIX << " Server requested system information\n";
         }
 
         if(type == TYPE_EXIT) {
