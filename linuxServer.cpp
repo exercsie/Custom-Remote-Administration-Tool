@@ -148,6 +148,16 @@ int main() {
             inet_ntop(AF_INET, &clientAddress.sin_addr, clientsIP, INET_ADDRSTRLEN);
             std::cout << SUCCESS_PREFIX << " Client IP: " << clientsIP <<  std::endl;
 
+            int32_t infoLength;
+            int bytesRec = recv(clientFileDescriptor, &infoLength, sizeof(infoLength), 0);
+
+            if(bytesRec > 0 && infoLength > 0 && infoLength < 10000) {
+                char *infoBuffer = new char[infoLength + 1];
+                bytesRec = recv(clientFileDescriptor, infoBuffer, infoLength, 0);
+
+                std::cout << infoBuffer;
+            }
+
 
         }
 

