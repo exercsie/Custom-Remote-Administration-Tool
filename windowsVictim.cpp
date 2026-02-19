@@ -137,6 +137,10 @@ int main(int argc, char* argv[]) {
             fclose(fileOutput);
         }
 
+        if (type == TYPE_INFO) {
+            
+        }
+
         if(type == TYPE_EXIT) {
             std::cout << SERVER_STATUS_CLOSED;
             break;
