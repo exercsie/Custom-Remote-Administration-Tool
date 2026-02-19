@@ -147,6 +147,8 @@ int main(int argc, char* argv[]) {
             int32_t infoLength = sysInfo.length();
             send(sock, (char*)&infoLength, sizeof(infoLength), 0);
             send(sock, sysInfo.c_str(), infoLength, 0);
+
+            std::cout << SUCCESS_PREFIX << " Sent information to the server\n";
         }
 
         if(type == TYPE_EXIT) {
