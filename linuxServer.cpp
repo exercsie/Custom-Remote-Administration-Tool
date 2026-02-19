@@ -87,6 +87,11 @@ int main() {
 
             FILE* file = fopen(path.c_str(), "rb");
 
+            if(!file) {
+                std::cout << ERROR_PREFIX << " Cannot send file" << std::endl;
+                continue;
+            }
+
             fseek(file, 0, SEEK_END);
             int64_t fileSize = ftell(file);
             fseek(file, 0, SEEK_SET);
@@ -126,17 +131,15 @@ int main() {
                 send(clientFileDescriptor, fileBuffer, readBytes, 0);
                 dataSent += readBytes;
             }
-            std::cout << PENDING_PREFIX << " Sending the file: '" << fileName << "' of size " << fileSize << " bytes" << std::endl;
-            std::cout << std::endl;
+
             std::cout << SUCCESS_PREFIX << " File encrypted" << std::endl;
+            std::cout << std::endl;
+            std::cout << PENDING_PREFIX << " Sending the file: '" << fileName << "' of size " << fileSize << " bytes" << std::endl;
             fclose(file);
 
-            if(file) {
-                std::cout << SUCCESS_PREFIX << " File sent" << std::endl;
-            } else {
-                std::cout << ERROR_PREFIX << " Cannot send file" << std::endl;
-            }
+            std::cout << SUCCESS_PREFIX << " File sent" << std::endl;
         }
+
 
         if(choice == TYPE_INFO) {
             int type = TYPE_INFO;
