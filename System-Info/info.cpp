@@ -5,9 +5,15 @@ std::string getSystemInfo() {
     std::stringstream info;
 
     char pcName[256];
-    DWORD size = sizeof(pcName);
-    if(GetComputerNameA(pcName, &size)) {
-        info << SUCCESS_PREFIX << " Computer Name: " << pcName << std::endl;
+    DWORD pcNameSize = sizeof(pcName);
+    if(GetComputerNameA(pcName, &pcNameSize)) {
+        info << SUCCESS_PREFIX << " Client Name: " << pcName << std::endl;
+    }
+
+    char pcUsername[256];
+    DWORD pcUsernameSize = sizeof(pcUsername);
+    if(GetUserNameA(pcUsername, &pcUsernameSize)) {
+        info << SUCCESS_PREFIX << " Client Username: " << pcUsername << std::endl;
     }
 
     OSVERSIONINFOA osver;
@@ -15,7 +21,7 @@ std::string getSystemInfo() {
     osver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOA);
 
     if(GetVersionExA(&osver)) {
-        info << SUCCESS_PREFIX << " OS: Windows " << osver.dwMajorVersion << std::endl;
+        info << SUCCESS_PREFIX << " Client OS: Windows " << osver.dwMajorVersion << "." << osver.dwMinorVersion << std::endl;
     }
 
     SYSTEM_INFO sysInfo;
@@ -23,19 +29,20 @@ std::string getSystemInfo() {
     info << SUCCESS_PREFIX << " Client Architecture: ";
     switch(sysInfo.wProcessorArchitecture) {
         case PROCESSOR_ARCHITECTURE_AMD64:
-            info << "AMD x64\n";
+            info << "x64\n";
             break;
         case PROCESSOR_ARCHITECTURE_INTEL:
-            info << "INTEL x86\n";
+            info << "x86\n";
+            break;
     }
 
-    info << SUCCESS_PREFIX << " Client has " << sysInfo.dwNumberOfProcessors << " processors\n";
+    info << SUCCESS_PREFIX << " Client Processors: " << sysInfo.dwNumberOfProcessors << std::endl;
 
     MEMORYSTATUSEX memoryInfo;
     memoryInfo.dwLength = sizeof(MEMORYSTATUSEX);
     if(GlobalMemoryStatusEx(&memoryInfo)) {
-        info << SUCCESS_PREFIX << " Total RAM: " << (memoryInfo.ullTotalPhys / ( 1024 * 1024 * 1024)) << " GB\n";
-        info << SUCCESS_PREFIX << " Avaliable RAM: " << (memoryInfo.ullAvailPhys / (1024 * 1024 * 1024)) << " GB\n";
+        info << SUCCESS_PREFIX << " Client Total RAM: " << (memoryInfo.ullTotalPhys / ( 1024 * 1024 * 1024)) << " GB\n";
+        info << SUCCESS_PREFIX << " Client Avaliable RAM: " << (memoryInfo.ullAvailPhys / (1024 * 1024 * 1024)) << " GB\n";
     }
 
     return info.str();

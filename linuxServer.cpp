@@ -87,11 +87,6 @@ int main() {
 
             FILE* file = fopen(path.c_str(), "rb");
 
-            if(!file) {
-                std::cout << ERROR_PREFIX << " Cannot send file" << std::endl;
-                continue;
-            }
-
             fseek(file, 0, SEEK_END);
             int64_t fileSize = ftell(file);
             fseek(file, 0, SEEK_SET);
@@ -131,21 +126,23 @@ int main() {
                 send(clientFileDescriptor, fileBuffer, readBytes, 0);
                 dataSent += readBytes;
             }
-
-            std::cout << SUCCESS_PREFIX << " File encrypted" << std::endl;
-            std::cout << std::endl;
             std::cout << PENDING_PREFIX << " Sending the file: '" << fileName << "' of size " << fileSize << " bytes" << std::endl;
+            std::cout << std::endl;
+            std::cout << SUCCESS_PREFIX << " File encrypted" << std::endl;
             fclose(file);
 
-            std::cout << SUCCESS_PREFIX << " File sent" << std::endl;
+            if(file) {
+                std::cout << SUCCESS_PREFIX << " File sent" << std::endl;
+            } else {
+                std::cout << ERROR_PREFIX << " Cannot send file" << std::endl;
+            }
         }
-
 
         if(choice == TYPE_INFO) {
             int type = TYPE_INFO;
             send(clientFileDescriptor, &type, sizeof(type), 0);
 
-            std::cout << PENDING_PREFIX << " Requesting system information..\n\n";
+            std::cout << PENDING_PREFIX << " Requesting client information..\n";
 
             char clientsIP[INET_ADDRSTRLEN];
             inet_ntop(AF_INET, &clientAddress.sin_addr, clientsIP, INET_ADDRSTRLEN);
@@ -157,6 +154,7 @@ int main() {
                 char *infoBuffer = new char[infoLength + 1];
                 bytesRec = recv(clientFileDescriptor, infoBuffer, infoLength, 0);
 
+                std::cout << SUCCESS_PREFIX << " Received client information\n\n";
                 if (bytesRec > 0) {
                     std::cout << CONSOLE_PREFIX << " |!|!|!|!|!|!| CLIENT INFORMATION |!|!|!|!|!|!|\n";
                     std::cout << SUCCESS_PREFIX << " Client IP: " << clientsIP <<  std::endl;
@@ -165,10 +163,7 @@ int main() {
                 } else {
                     std::cout << ERROR_PREFIX << " Failed to receive client information\n";
                 }
-
             }
-
-
         }
 
         if(choice == TYPE_EXIT) {

