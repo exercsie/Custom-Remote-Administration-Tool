@@ -167,6 +167,10 @@ int main() {
             }
         }
 
+        if(choice == TYPE_EXECUTE) {
+            
+        }
+
         if(choice == TYPE_EXIT) {
             int type = TYPE_EXIT;
             send(clientFileDescriptor, &type, sizeof(type), 0);

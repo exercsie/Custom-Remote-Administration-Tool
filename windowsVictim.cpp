@@ -4,8 +4,9 @@
 #include <cstdint>
 #include "menu.h"
 #include <direct.h>
-#include <windows.h>
+#include <windows.h> // https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/
 #include <sstream>
+#include <shellapi.h>
 #include "Encryption-Techniques/CaesarCipherShift.h"
 #include "System-Info/info.h"
 

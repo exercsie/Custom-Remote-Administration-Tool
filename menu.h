@@ -11,8 +11,9 @@ enum MessageType {
     TYPE_TEXT = 1,
     TYPE_FILE = 2,
     TYPE_INFO = 3,
-    TYPE_EXIT = 4,
-    TYPE_BACK = 5
+    TYPE_EXECUTE = 4,
+    TYPE_EXIT = 5,
+    TYPE_BACK = 6
 };
 
 int menu();
