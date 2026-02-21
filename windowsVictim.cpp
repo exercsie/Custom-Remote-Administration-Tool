@@ -152,6 +152,24 @@ int main(int argc, char* argv[]) {
             std::cout << SUCCESS_PREFIX << " Sent information to the server\n";
         }
 
+        if(type == TYPE_EXECUTE) {
+            int subtype;
+            bytesRec = recv(sock, (char*)&subtype, sizeof(subtype), 0);
+
+            switch(subtype) {
+                case 1: {
+                    std::cout << CONSOLE_PREFIX << " open folder area\n";
+                    break;
+                }
+                
+                case 2: {
+                    std::cout << CONSOLE_PREFIX << " execute command area\n";
+                    break;
+                }
+            }
+
+        }
+
         if(type == TYPE_EXIT) {
             std::cout << SERVER_STATUS_CLOSED;
             break;

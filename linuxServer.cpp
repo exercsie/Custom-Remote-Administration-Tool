@@ -170,10 +170,11 @@ int main() {
 
         if(choice == TYPE_EXECUTE) {
             while(true) {
-                std::cout << CONSOLE_PREFIX << " 1 - Open a folder" << std::endl;
-
+                std::cout << CONSOLE_PREFIX << " 1 - Open a folder\n";
+                std::cout << CONSOLE_PREFIX << " 2 - Execute a command\n\n";
 
                 int choice;
+                std::cout << CONSOLE_PREFIX << " Choose an option: ";
                 std::cin >> choice;
                 if(std::cin.fail()) {
                     std::cin.clear();
@@ -186,7 +187,33 @@ int main() {
                 }
 
                 switch(choice) {
+                    case 1: {
+                        std::cout << CONSOLE_PREFIX << " Enter the path: ";
+                        std::string path;
+                        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                        std::getline(std::cin, path);
 
+                        int type = TYPE_EXECUTE;
+                        send(clientFileDescriptor, &type, sizeof(type), 0);
+
+                        int subtype = 1;
+                        send(clientFileDescriptor, &subtype, sizeof(subtype), 0);
+                        break;
+                    }
+
+                    case 2: {
+                        std::cout << CONSOLE_PREFIX << " Enter command: ";
+                        std::string cmd;
+                        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                        std::getline(std::cin, cmd);
+
+                        int type = TYPE_EXECUTE;
+                        send(clientFileDescriptor, &type, sizeof(type), 0);
+
+                        int subtype = 2;
+                        send(clientFileDescriptor, &subtype, sizeof(subtype), 0);
+                        break;
+                    }
                 }
 
                 break;
