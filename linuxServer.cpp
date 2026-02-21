@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <limits>
 #include "menu.h"
 #include <unistd.h>
 #include "Encryption-Techniques/CaesarCipherShift.h"
@@ -168,7 +169,28 @@ int main() {
         }
 
         if(choice == TYPE_EXECUTE) {
-            
+            while(true) {
+                std::cout << CONSOLE_PREFIX << " 1 - Open a folder" << std::endl;
+
+
+                int choice;
+                std::cin >> choice;
+                if(std::cin.fail()) {
+                    std::cin.clear();
+                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                    std::cout << ERROR_PREFIX << " Invalid usage, please enter a number between 1-3\n";
+                    continue;
+                } else if (!(choice >= 1 && choice <= 3)) {
+                    std::cout << ERROR_PREFIX << " Invalid usage, please enter a number between 1-3\n";
+                    continue;
+                }
+
+                switch(choice) {
+
+                }
+
+                break;
+            }
         }
 
         if(choice == TYPE_EXIT) {
