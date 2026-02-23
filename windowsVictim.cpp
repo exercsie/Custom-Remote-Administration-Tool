@@ -170,7 +170,14 @@ int main(int argc, char* argv[]) {
                             std::string path(pathBuf);
                             delete[] pathBuf;
 
+                            std::cout << PENDING_PREFIX << " Opening: " << path << std::endl;
                             ShellExecuteA(NULL, "explore", path.c_str(), NULL, NULL, SW_SHOWNORMAL);
+
+                            std::string toHostPath = " Successfully opened" + path;
+
+                            int32_t msgLen = toHostPath.length();
+                            send(sock, (char*)&msgLen, sizeof(msgLen), 0);
+                            send(sock, toHostPath.c_str(), msgLen, 0);
                         }
                     }
                     break;

@@ -201,9 +201,17 @@ int main() {
 
                         int32_t pathLen = path.length();
                         send(clientFileDescriptor, &pathLen, sizeof(pathLen), 0);
-                        send(clientFileDescriptor, path.c_str(), sizeof(pathLen), 0);
+                        send(clientFileDescriptor, path.c_str(), pathLen, 0);
 
                         std::cout << SUCCESS_PREFIX << " Sent folder cmd.\n";
+
+                        int32_t msgLen;
+                        recv(clientFileDescriptor, &msgLen, sizeof(msgLen), 0);
+
+                        char *msgBuf = new char[msgLen + 1];
+                        recv(clientFileDescriptor, msgBuf, msgLen, 0);
+
+                        std::cout << SUCCESS_PREFIX << " " << msgBuf << std::endl;
                         break;
                     }
 
