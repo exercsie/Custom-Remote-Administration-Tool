@@ -158,7 +158,14 @@ int main(int argc, char* argv[]) {
 
             switch(subtype) {
                 case 1: {
-                    std::cout << CONSOLE_PREFIX << " open folder area\n";
+                    int32_t pathLen;
+                    bytesRec = recv(sock, (char*)&pathLen, sizeof(pathLen), 0);
+
+                    if(bytesRec > 0 && pathLen > 0 && pathLen < 10000) {
+                        std::cout << "recevied : " << bytesRec << std::endl;
+                    } else {
+                        std::cout << "test";
+                    }
                     break;
                 }
                 

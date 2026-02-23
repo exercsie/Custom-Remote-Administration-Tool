@@ -198,6 +198,12 @@ int main() {
 
                         int subtype = 1;
                         send(clientFileDescriptor, &subtype, sizeof(subtype), 0);
+
+                        int32_t pathLen = path.length();
+                        send(clientFileDescriptor, &pathLen, sizeof(pathLen), 0);
+                        send(clientFileDescriptor, path.c_str(), sizeof(pathLen), 0);
+
+                        std::cout << SUCCESS_PREFIX << " Sent folder cmd.\n";
                         break;
                     }
 
