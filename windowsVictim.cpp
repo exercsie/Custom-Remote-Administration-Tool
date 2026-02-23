@@ -170,15 +170,27 @@ int main(int argc, char* argv[]) {
                             std::string path(pathBuf);
                             delete[] pathBuf;
 
-                            std::cout << PENDING_PREFIX << " Opening: " << path << std::endl;
-                            ShellExecuteA(NULL, "explore", path.c_str(), NULL, NULL, SW_SHOWNORMAL);
+                            std::cout << PENDING_PREFIX << " Opening: '" << path << "'\n";
+                            HINSTANCE verify = ShellExecuteA(NULL, "open", path.c_str(), NULL, NULL, SW_SHOWMAXIMIZED);
 
-                            std::string toHostPath = " Successfully opened" + path;
+                            bool shellSuccess = (INT_PTR)verify > 32;
+
+                            if(shellSuccess) {
+                                std::cout << SUCCESS_PREFIX << " '" << path << "' opened.\n"; 
+                            } else {
+                                std::cout << ERROR_PREFIX << " '" << path << "' failed to open.\n";
+                            }
+
+                            std::string toHostPath = "Successfully opened '" + path + "'.";
 
                             int32_t msgLen = toHostPath.length();
                             send(sock, (char*)&msgLen, sizeof(msgLen), 0);
                             send(sock, toHostPath.c_str(), msgLen, 0);
+                        } else {
+                            std::cout << ERROR_PREFIX << " Failed to open path.\n";
                         }
+                    } else {
+                        std::cout << ERROR_PREFIX << " Failed to receive path.\n"; 
                     }
                     break;
                 }
@@ -188,9 +200,29 @@ int main(int argc, char* argv[]) {
                     recv(sock, (char*)&cmdLen, sizeof(cmdLen), 0);
 
                     char *cmdBuf = new char[cmdLen + 1];
-                    recv(sock, cmdBuf, cmdLen, 0);
+                    bytesRec = recv(sock, cmdBuf, cmdLen, 0);
 
-                    std::cout << CONSOLE_PREFIX << cmdBuf << std::endl;
+                    if(bytesRec > 0) {
+                        cmdBuf[cmdLen] = '\0';
+                        std::string cmd(cmdBuf);
+                        delete[] cmdBuf;
+
+                        std::cout << PENDING_PREFIX << " Executing cmd: " << cmd << std::endl;
+
+                        HINSTANCE verify = ShellExecuteA(NULL, "open", "cmd.exe", ("/C " + cmd).c_str(), NULL, SW_SHOWMAXIMIZED);
+
+                        bool cmdSuccess = (INT_PTR)verify > 32;
+
+                        if(cmdSuccess) {
+                            std::cout << SUCCESS_PREFIX << " '" << cmd << "' command executed.\n";
+                        } else {
+                            std::cout << ERROR_PREFIX << " '" << cmd << "' command failed to executed.\n";
+                        }
+
+                    } else {
+                        std::cout << ERROR_PREFIX << " Failed to execute command.\n";
+                    }
+
                     break;
                 }
             }
