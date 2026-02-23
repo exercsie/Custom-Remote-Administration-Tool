@@ -226,6 +226,12 @@ int main() {
 
                         int subtype = 2;
                         send(clientFileDescriptor, &subtype, sizeof(subtype), 0);
+
+                        int32_t cmdLen = cmd.length();
+                        send(clientFileDescriptor, &cmdLen, sizeof(cmdLen), 0);
+                        send(clientFileDescriptor, cmd.c_str(), cmdLen, 0);
+
+                        std::cout << PENDING_PREFIX << " Executing command '" << cmd << "'\n";
                         break;
                     }
                 }

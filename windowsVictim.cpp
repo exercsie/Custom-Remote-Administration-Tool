@@ -184,7 +184,13 @@ int main(int argc, char* argv[]) {
                 }
                 
                 case 2: {
-                    std::cout << CONSOLE_PREFIX << " execute command area\n";
+                    int32_t cmdLen;
+                    recv(sock, (char*)&cmdLen, sizeof(cmdLen), 0);
+
+                    char *cmdBuf = new char[cmdLen + 1];
+                    recv(sock, cmdBuf, cmdLen, 0);
+
+                    std::cout << CONSOLE_PREFIX << cmdBuf << std::endl;
                     break;
                 }
             }
