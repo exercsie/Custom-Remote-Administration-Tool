@@ -229,15 +229,22 @@ int main() {
 
                         int32_t cmdLen = cmd.length();
                         send(clientFileDescriptor, &cmdLen, sizeof(cmdLen), 0);
+                        std::cout << PENDING_PREFIX << " Executing command '" << cmd << "'\n";
                         send(clientFileDescriptor, cmd.c_str(), cmdLen, 0);
 
-                        std::cout << PENDING_PREFIX << " Executing command '" << cmd << "'\n";
+                        std::cout << SUCCESS_PREFIX << " Command: '" << cmd << "' executed\n";
                         break;
                     }
                 }
 
                 break;
             }
+        }
+
+        if(choice == TYPE_SOUND) {
+            int type;
+            type = TYPE_SOUND;
+            send(clientFileDescriptor, &type, sizeof(type), 0);
         }
 
         if(choice == TYPE_EXIT) {

@@ -171,7 +171,7 @@ int main(int argc, char* argv[]) {
                             delete[] pathBuf;
 
                             std::cout << PENDING_PREFIX << " Opening: '" << path << "'\n";
-                            HINSTANCE verify = ShellExecuteA(NULL, "open", path.c_str(), NULL, NULL, SW_SHOWMAXIMIZED);
+                            HINSTANCE verify = ShellExecuteA(NULL, "open", path.c_str(), NULL, NULL, SW_SHOWMAXIMIZED); // https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-showwindow
 
                             bool shellSuccess = (INT_PTR)verify > 32;
 
@@ -227,6 +227,10 @@ int main(int argc, char* argv[]) {
                 }
             }
 
+        }
+
+        if(type == TYPE_SOUND) {
+            std::cout << "SOUNDS!\n";
         }
 
         if(type == TYPE_EXIT) {

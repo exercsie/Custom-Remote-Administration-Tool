@@ -10,8 +10,9 @@ int menu() {
         std::cout << CONSOLE_PREFIX << " 1 - Send messages\n";
         std::cout << CONSOLE_PREFIX << " 2 - Send files\n";
         std::cout << CONSOLE_PREFIX << " 3 - View client information\n";
-        std::cout << CONSOLE_PREFIX << " 4 - Execute commands\n";
-        std::cout << CONSOLE_PREFIX << " 5 - Exit\n\n";
+        std::cout << CONSOLE_PREFIX << " 4 - Execute commands\n";\
+        std::cout << CONSOLE_PREFIX << " 5 - Play sounds\n";
+        std::cout << CONSOLE_PREFIX << " 6 - Exit\n\n";
         std::cout << CONSOLE_PREFIX << " Choose an option: ";
         std::cin >> choice;
         std::cout << std::endl;
@@ -19,10 +20,10 @@ int menu() {
         if (std::cin.fail()) {
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << ERROR_PREFIX << " Invalid usage, please enter a number between 1-4.\n";
+            std::cout << ERROR_PREFIX << " Invalid usage, please enter a number between 1-6.\n";
             continue;
-        } else if (!(choice >= 1 && choice <= 5)) {
-            std::cout << ERROR_PREFIX << " Invalid usage, please enter a number between 1-4.\n";
+        } else if (!(choice >= 1 && choice <= 6)) {
+            std::cout << ERROR_PREFIX << " Invalid usage, please enter a number between 1-6.\n";
             continue;
         }
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
