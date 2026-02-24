@@ -177,9 +177,9 @@ int main(int argc, char* argv[]) {
             std::string path;
             path = receiveFile(sock, buffer);
             if(!path.empty()) {
-                std::string openFile = "open \"" + path + "\"";
+                std::string openFile = "open \"" + path + "\" alias sound";
                 mciSendStringA(openFile.c_str(), NULL, 0, 0);
-                mciSendStringA("play media", NULL, 0, 0);
+                mciSendStringA("play sound", NULL, 0, 0);
                 std::cout << SUCCESS_PREFIX << " Playing: " << path << std::endl;
             }
         }
