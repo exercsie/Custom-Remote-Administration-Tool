@@ -8,6 +8,7 @@
 #include <sstream>
 #include <shellapi.h> // https://learn.microsoft.com/en-us/windows/win32/api/shellapi/
 #include "..\Headers\CaesarCipherShift.h"
+#include "System-info\info.h"
 
 int main(int argc, char* argv[]) {
     if(argc < 2) {
