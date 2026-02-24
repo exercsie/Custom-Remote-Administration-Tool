@@ -1,5 +1,5 @@
 #include "info.h"
-#include "..\menu.h"
+#include "..\..\Headers\menu.h"
 
 std::string getSystemInfo() {
     std::stringstream info;
