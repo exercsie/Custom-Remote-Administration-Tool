@@ -45,6 +45,7 @@ std::string receiveFile(SOCKET sock, char* buffer) {
     FILE* fileOutput = fopen(path.c_str(), "wb");
     if(!fileOutput) {
         std::cout << ERROR_PREFIX << " Cannot create file\n";
+        perror("fopen error");
         return "";
     }
 

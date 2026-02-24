@@ -174,6 +174,8 @@ int main(int argc, char* argv[]) {
         }
 
         if(type == TYPE_SOUND) {
+            mciSendStringA("stop sound", NULL, 0, 0);
+            mciSendStringA("close sound", NULL, 0, 0);
             std::string path;
             path = receiveFile(sock, buffer);
             if(!path.empty()) {
