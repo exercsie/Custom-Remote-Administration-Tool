@@ -6,9 +6,9 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <limits>
-#include "menu.h"
+#include "../Headers/menu.h"
 #include <unistd.h>
-#include "Encryption-Techniques/CaesarCipherShift.h"
+#include "../Headers/CaesarCipherShift.h"
 
 int main() {
     sockaddr_in serverAddress{}, clientAddress{};

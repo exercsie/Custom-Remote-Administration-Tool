@@ -2,13 +2,12 @@
 #include <iostream>
 #include <ws2tcpip.h>
 #include <cstdint>
-#include "menu.h"
+#include "..\Headers\menu.h"
 #include <direct.h>
 #include <windows.h> // https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/
 #include <sstream>
 #include <shellapi.h> // https://learn.microsoft.com/en-us/windows/win32/api/shellapi/
-#include "Encryption-Techniques/CaesarCipherShift.h"
-#include "System-Info/info.h"
+#include "..\Headers\CaesarCipherShift.h"
 
 int main(int argc, char* argv[]) {
     if(argc < 2) {
