@@ -2,11 +2,11 @@
 #include <cstdint>
 #include <direct.h>
 #include "receiveFile.h"
-#include "..\Headers\menu.h"
-#include "..\Headers\CaesarCipherShift.h"
+#include "..\..\Headers\menu.h"
+#include "..\..\Headers\CaesarCipherShift.h"
 
 std::string receiveFile(SOCKET sock, char* buffer) {
-    int encryptKey;
+    int encryptKey, bytesRec;
     bytesRec = recv(sock, (char*)&encryptKey, sizeof(encryptKey), 0);
     if(bytesRec <= 0) {
         std::cout << ERROR_PREFIX << " Cannot receive encryption key\n";
