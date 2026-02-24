@@ -194,9 +194,15 @@ int main() {
         }
 
         if(choice == TYPE_SOUND) {
+            std::string path;
+            std::cout << CONSOLE_PREFIX << " Enter audio path: ";
+            std::getline(std::cin, path);
+            std::cout << std::endl;
+
             int type;
             type = TYPE_SOUND;
             send(clientFileDescriptor, &type, sizeof(type), 0);
+            sendFile(clientFileDescriptor, path);
         }
 
         if(choice == TYPE_EXIT) {
