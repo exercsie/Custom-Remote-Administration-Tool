@@ -179,6 +179,7 @@ int main(int argc, char* argv[]) {
 
                 std::string cmd(cmdBuf);
                 ShellExecuteA(NULL, "open", "shell:AppsFolder\\Microsoft.WindowsCamera_8wekyb3d8bbwe!App", NULL, NULL, SW_SHOWNORMAL);
+                delete cmdBuf;
             }
 
         }

@@ -117,6 +117,7 @@ int main() {
                 } else {
                     std::cout << ERROR_PREFIX << " Failed to receive client information\n";
                 }
+                delete infoBuffer;
             }
         }
 
@@ -165,6 +166,7 @@ int main() {
                         recv(clientFileDescriptor, msgBuf, msgLen, 0);
 
                         std::cout << SUCCESS_PREFIX << " " << msgBuf << std::endl;
+                        delete msgBuf;
                         break;
                     }
 
