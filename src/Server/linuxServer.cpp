@@ -103,12 +103,13 @@ int main() {
             bytesRec = recv(clientFileDescriptor, infoBuffer, sizeof(infoBuffer), 0);
 
             if(bytesRec > 0) {
+                std::string info(infoBuffer, bytesRec);
                 std::cout << SUCCESS_PREFIX << " Received client information\n\n";
                 char clientsIP[INET_ADDRSTRLEN];
                 inet_ntop(AF_INET, &clientAddress.sin_addr, clientsIP, INET_ADDRSTRLEN);
                 std::cout << CONSOLE_PREFIX << " |!|!|!|!|!|!| CLIENT INFORMATION |!|!|!|!|!|!|\n";
                 std::cout << SUCCESS_PREFIX << " Client IP: " << clientsIP <<  std::endl;
-                std::cout << infoBuffer;
+                std::cout << info;
                 std::cout << CONSOLE_PREFIX << " |!|!|!|!|!|!| ------------------ |!|!|!|!|!|!|\n";
             } else {
                 std::cout << ERROR_PREFIX << " Failed to receive client information\n";
@@ -153,8 +154,9 @@ int main() {
 
                         char msgBuf[BUFFERSIZE];
                         bytesRec = recv(clientFileDescriptor, msgBuf, sizeof(msgBuf), 0);
+                        std::string msg(msgBuf, bytesRec);
 
-                        std::cout << SUCCESS_PREFIX << " " << msgBuf << std::endl;
+                        std::cout << SUCCESS_PREFIX << " " << msg << std::endl;
                         break;
                     }
 

