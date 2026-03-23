@@ -12,24 +12,23 @@
 #include "Send-File/sendFile.h"
 
 int main() {
-    sockaddr_in serverAddress{}, clientAddress{};
-    socklen_t clientLength = sizeof(clientAddress);
     int serverFileDescripter; // 0 = standard input, 1= standard output, 2= standard error, 3 = socket created
-    int clientFileDescriptor;
-    char buffer[BUFFERSIZE];
-
     serverFileDescripter = socket(AF_INET, SOCK_STREAM, 0);
-    if(serverFileDescripter < 0) {
+    if(serverFileDescripter == -1) {
         std::cout << ERROR_PREFIX << " Socket failed to create\n";
         return 1;
-    } else if(serverFileDescripter == 3) {
+    } else {
         std::cout << SUCCESS_PREFIX << " Socket created\n";
     }
 
+    sockaddr_in serverAddress{};
     serverAddress.sin_family = AF_INET; // IPv4
     serverAddress.sin_addr.s_addr = INADDR_ANY; // ip address to bind to
     serverAddress.sin_port = htons(PORT); // htons converts port to network byte order
-    if(bind(serverFileDescripter, (sockaddr*) &serverAddress, sizeof(serverAddress)) < 0) {
+
+    int bindSock;
+    bindSock = bind(serverFileDescripter, (sockaddr*)&serverAddress, sizeof(serverAddress));
+    if(bindSock == -1) {
         std::cout << ERROR_PREFIX << " Bind failed to create\n";
         perror(ERROR_PREFIX);
         return 1;
@@ -37,20 +36,28 @@ int main() {
         std::cout << SUCCESS_PREFIX << " Bind created\n";
     }
 
-    if(listen(serverFileDescripter, 1) < 0) {
+    int listening;
+    listening = listen(serverFileDescripter, 1);
+    if(listening == -1) {
         std::cout << ERROR_PREFIX << " Failed to find incoming connection requests\n";
+        close(serverFileDescripter);
         return 1;
     } else {
-        std::cout << PENDING_PREFIX << " Listening on port: " << PORT << std::endl; 
+        std::cout << PENDING_PREFIX << " Listening on port: " << PORT << "...\n";
     }
 
-    clientFileDescriptor = accept(serverFileDescripter, (sockaddr*) &clientAddress, &clientLength);
-    if(clientFileDescriptor < 0) {
+    int clientFileDescriptor;
+    socklen_t serverlength = sizeof(serverAddress);
+    clientFileDescriptor = accept(serverFileDescripter, (sockaddr*) &serverAddress, &serverlength);
+    if(clientFileDescriptor == -1) {
         std::cout << ERROR_PREFIX << " Connection failed\n";
+        close(serverFileDescripter);
+        return 1;
     } else {
         std::cout << SUCCESS_PREFIX << " Connection established\n";
     }
 
+    char buffer[BUFFERSIZE];
     int bytesRec, bytesSend;
     while(true) {
         int choice = menu();
@@ -106,7 +113,7 @@ int main() {
                 std::string info(infoBuffer, bytesRec);
                 std::cout << SUCCESS_PREFIX << " Received client information\n\n";
                 char clientsIP[INET_ADDRSTRLEN];
-                inet_ntop(AF_INET, &clientAddress.sin_addr, clientsIP, INET_ADDRSTRLEN);
+                inet_ntop(AF_INET, &serverAddress.sin_addr, clientsIP, INET_ADDRSTRLEN);
                 std::cout << CONSOLE_PREFIX << " |!|!|!|!|!|!| CLIENT INFORMATION |!|!|!|!|!|!|\n";
                 std::cout << SUCCESS_PREFIX << " Client IP: " << clientsIP <<  std::endl;
                 std::cout << info;
@@ -152,9 +159,8 @@ int main() {
 
                         std::cout << SUCCESS_PREFIX << " Sent folder cmd.\n";
 
-                        char msgBuf[BUFFERSIZE];
-                        bytesRec = recv(clientFileDescriptor, msgBuf, sizeof(msgBuf), 0);
-                        std::string msg(msgBuf, bytesRec);
+                        bytesRec = recv(clientFileDescriptor, buffer, sizeof(buffer), 0);
+                        std::string msg(buffer, bytesRec);
 
                         std::cout << SUCCESS_PREFIX << " " << msg << std::endl;
                         break;
@@ -217,5 +223,6 @@ int main() {
         }
     }
 
+    close(serverFileDescripter);
     return 0;
 }

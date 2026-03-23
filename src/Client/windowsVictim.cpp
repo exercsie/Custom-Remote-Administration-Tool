@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
     }
     WSADATA wsa;
 
-    int WSASuccess, bytesRec, bytesSend;
+    int WSASuccess;
     WSASuccess = WSAStartup(MAKEWORD(2, 2), &wsa);
     if(WSASuccess != 0) {
         std::cout << ERROR_PREFIX << " WSAStartup failed\n";
@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
     }
 
     int connectionEstablished;
-    connectionEstablished = connect(sock, (sockaddr*) &serverAddress, sizeof(serverAddress));
+    connectionEstablished = connect(sock, (sockaddr*)&serverAddress, sizeof(serverAddress));
     if(connectionEstablished == -1) {
         std::cout << ERROR_PREFIX << " Connection failed\n";
         closesocket(sock);
@@ -61,6 +61,7 @@ int main(int argc, char* argv[]) {
     }
 
     char buffer[BUFFERSIZE];
+    int bytesRec, bytesSend;
     while(true) {
         int type;
         bytesRec = recv(sock, (char*)&type, sizeof(type), 0);
