@@ -106,11 +106,10 @@ int main() {
 
             std::cout << PENDING_PREFIX << " Requesting client information..\n";
 
-            char infoBuffer[BUFFERSIZE];
-            bytesRec = recv(clientFileDescriptor, infoBuffer, sizeof(infoBuffer), 0);
+            bytesRec = recv(clientFileDescriptor, buffer, sizeof(buffer), 0);
 
             if(bytesRec > 0) {
-                std::string info(infoBuffer, bytesRec);
+                std::string info(buffer, bytesRec);
                 std::cout << SUCCESS_PREFIX << " Received client information\n\n";
                 char clientsIP[INET_ADDRSTRLEN];
                 inet_ntop(AF_INET, &serverAddress.sin_addr, clientsIP, INET_ADDRSTRLEN);
@@ -126,7 +125,7 @@ int main() {
         if(choice == TYPE_EXECUTE) {
             while(true) {
                 std::cout << CONSOLE_PREFIX << " 1 - Open a folder\n";
-                std::cout << CONSOLE_PREFIX << " 2 - Execute a command\n";
+                std::cout << CONSOLE_PREFIX << " 2 - Execute a file\n";
                 std::cout << CONSOLE_PREFIX << " 3 - Open camera\n\n";
 
                 int choice;
