@@ -126,16 +126,18 @@ int main(int argc, char* argv[]) {
                     bool shellSuccess = (INT_PTR)verify > 32;
                     if(shellSuccess) {
                         std::cout << SUCCESS_PREFIX << " " << path << " opened\n"; 
+                        std::string toHostPath = std::string(SUCCESS_PREFIX) + " " + path + " opened";
+                        bytesSend = send(sock, toHostPath.c_str(), toHostPath.length(), 0);
+                        if(bytesSend <= 0) {
+                            std::cout << ERROR_PREFIX << " Failed to send confirmation message\n";
+                        }
                     } else {
-                        std::cout << ERROR_PREFIX << " '" << path << "' failed to open\n";
+                        std::cout << ERROR_PREFIX << " " << path << " does not exist\n";
+                        std::string pathDoesNotExist = std::string(ERROR_PREFIX) + " " + path + " does not exist";
+                        bytesSend = send(sock, pathDoesNotExist.c_str(), pathDoesNotExist.length(), 0);
+                        break;
                     }
 
-                    std::string toHostPath = " " + path + " opened";
-                    bytesSend = send(sock, toHostPath.c_str(), toHostPath.length(), 0);
-                    if(bytesSend <= 0) {
-                        std::cout << ERROR_PREFIX << " Failed to send confirmation message\n";
-                    }
-                    
                     break;
                 }
                 
@@ -153,8 +155,18 @@ int main(int argc, char* argv[]) {
                     bool cmdSuccess = (INT_PTR)verify > 32;
                     if(cmdSuccess) {
                         std::cout << SUCCESS_PREFIX << " " << fileName << " executed\n";
+                        std::string toHostFileName = std::string(SUCCESS_PREFIX) + " " + fileName + " executed";
+                        bytesSend = send(sock, toHostFileName.c_str(), toHostFileName.length(), 0);
+                        if(bytesSend <= 0) {
+                            std::cout << ERROR_PREFIX << " Failed to send execution confirmation\n";
+                        }
                     } else {
-                        std::cout << ERROR_PREFIX << " " << fileName << " failed to execute.\n";
+                        std::cout << ERROR_PREFIX << " " << fileName << " failed to execute\n";
+                        std::string fileDoesNotExist = std::string(ERROR_PREFIX) + " " + fileName + " does not exist";
+                        bytesSend = send(sock, fileDoesNotExist.c_str(), fileDoesNotExist.length(), 0);
+                        if(bytesSend <= 0) {
+                            std::cout << ERROR_PREFIX << " Failed to send execution confirmation\n";
+                        }
                     }
 
                     break;

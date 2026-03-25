@@ -156,14 +156,18 @@ int main() {
                         bytesSend = send(clientFileDescriptor, path.c_str(), path.length(), 0);
                         std::cout << PENDING_PREFIX << " Opening " << path << "...\n";  
                         if(bytesSend <= 0) {
-                            std::cout << ERROR_PREFIX << " Failed to open " << path << std::endl;
+                            std::cout << ERROR_PREFIX << " Failed to send " << path << std::endl;
                             break;
                         }
 
                         bytesRec = recv(clientFileDescriptor, buffer, sizeof(buffer), 0);
-                        std::string msg(buffer, bytesRec);
+                        if(bytesRec <= 0) {
+                            std::cout << ERROR_PREFIX << " Cannot receive confirmation\n";
+                            break;
+                        }
 
-                        std::cout << SUCCESS_PREFIX << msg << std::endl;
+                        std::string pathConfirmation(buffer, bytesRec);
+                        std::cout << pathConfirmation << std::endl;
                         break;
                     }
 
@@ -179,11 +183,18 @@ int main() {
                         std::cout << PENDING_PREFIX << " Executing " << fileName << "...\n";
                         bytesSend = send(clientFileDescriptor, fileName.c_str(), fileName.length(), 0);
                         if(bytesSend <= 0) {
-                            std::cout << ERROR_PREFIX << " Failed to execute " << fileName << std::endl;
+                            std::cout << ERROR_PREFIX << " Failed to send " << fileName << std::endl;
                             break;
                         }
 
-                        std::cout << SUCCESS_PREFIX << " " << fileName << " executed\n";
+                        bytesRec = recv(clientFileDescriptor, buffer, BUFFERSIZE, 0);
+                        if(bytesRec <= 0) {
+                            std::cout << "Failed to execute " << fileName << std::endl;
+                            break;
+                        }
+
+                        std::string exeFileNameConfirmation(buffer, bytesRec);
+                        std::cout << exeFileNameConfirmation << std::endl;
                         break;
                     }
 
