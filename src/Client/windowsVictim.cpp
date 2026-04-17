@@ -90,6 +90,12 @@ int main(int argc, char* argv[]) {
         }
         
         if(type == TYPE_FILE) {
+            bytesRec = recv(sock, buffer, BUFFERSIZE, 0);
+            std::string errorTest(buffer, bytesRec);
+            if(errorTest == "error") {
+                std::cout << ERROR_PREFIX << " Valid file not found\n";
+                continue;
+            }
             receiveFile(sock, buffer);
         }
 
@@ -187,6 +193,13 @@ int main(int argc, char* argv[]) {
         }
 
         if(type == TYPE_SOUND) {
+            bytesRec = recv(sock, buffer, BUFFERSIZE, 0);
+            std::string errorTest(buffer, bytesRec);
+            if(errorTest == "error") {
+                std::cout << ERROR_PREFIX << " Valid file not found\n";
+                continue;
+            }
+
             mciSendStringA("stop sound", NULL, 0, 0);
             mciSendStringA("close sound", NULL, 0, 0);
 
@@ -198,7 +211,7 @@ int main(int argc, char* argv[]) {
                 mciSendStringA("play sound", NULL, 0, 0);
                 std::cout << SUCCESS_PREFIX << " Playing " << path << std::endl;
             } else {
-                std::cout << ERROR_PREFIX << " " << path << " failed to play\n";
+                std::cout << ERROR_PREFIX << " " << path << "failed to play\n";
             }
         }
 

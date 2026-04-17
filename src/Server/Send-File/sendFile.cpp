@@ -7,7 +7,9 @@
 void sendFile(int clientFileDescriptor, const std::string &path) {
     FILE* file = fopen(path.c_str(), "rb");
 
+    std::string error = "error";
     if(!file) {
+        send(clientFileDescriptor, error.c_str(), error.length(), 0);
         std::cout << ERROR_PREFIX << " Cannot send file" << std::endl;
         return;
     }
