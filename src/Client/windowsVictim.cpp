@@ -193,9 +193,9 @@ int main(int argc, char* argv[]) {
         }
 
         if(type == TYPE_SOUND) {
-            bytesRec = recv(sock, buffer, BUFFERSIZE, 0);
-            std::string errorTest(buffer, bytesRec);
-            if(errorTest == "error") {
+            int error;
+            bytesRec = recv(sock, (char*)&error, sizeof(error), 0);
+            if(error == 1) {
                 std::cout << ERROR_PREFIX << " Valid file not found\n";
                 continue;
             }

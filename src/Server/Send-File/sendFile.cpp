@@ -7,12 +7,14 @@
 void sendFile(int clientFileDescriptor, const std::string &path) {
     FILE* file = fopen(path.c_str(), "rb");
 
-    std::string error = "error";
+    int error = 0;
     if(!file) {
-        send(clientFileDescriptor, error.c_str(), error.length(), 0);
+        error = 1;
+        send(clientFileDescriptor, (char*)&error, sizeof(error), 0);
         std::cout << ERROR_PREFIX << " Cannot send file" << std::endl;
         return;
     }
+    send(clientFileDescriptor, (char*)&error, sizeof(error), 0);
 
     fseek(file, 0, SEEK_END);
     int64_t fileSize = ftell(file);
