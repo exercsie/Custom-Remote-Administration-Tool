@@ -5,7 +5,7 @@ src\Client\System-Info\info.cpp \
 src\Client\Receive-File\receiveFile.cpp
 
 ifeq ($(OS),Windows_NT)
-	CLIENT_FLAGS = -lws2_32 -lwinmm -static -static-libgcc -static-libstdc++
+	CLIENT_FLAGS = -lws2_32 -lwinmm -static -static-libgcc -static-libstdc++ -std=c++23
 	RM = del /Q
 else 
 	RM = rm -f
